@@ -1,10 +1,10 @@
 <template>
   <DefaultLayout>
-    <div class="bg-white text-gray-800">
+    <div class="bg-gray-50 text-gray-800">
       <!-- HERO -->
       <section class="text-center py-16 px-6">
         <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-          Conectando <span class="text-green-600">talento universitario</span> con oportunidades laborales
+          Conectando <span class="text-green-500">talento universitario</span> con oportunidades laborales
         </h1>
         <p class="text-gray-600 text-lg mb-8">
           Encuentra trabajos freelance, remotos o por proyecto exclusivos para estudiantes universitarios
@@ -16,75 +16,77 @@
             v-model="search"
             type="text"
             placeholder="🔍 Buscar oportunidades…"
-            class="flex-1 min-w-[250px] border px-4 py-2 rounded-md text-sm"
+            class="flex-1 min-w-[250px] border border-gray-300 px-4 py-2 rounded-md text-sm focus:ring focus:ring-green-200"
           />
-          <button class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
+          <button class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600">
             Buscar
           </button>
         </div>
 
         <!-- Filtros -->
         <div class="flex flex-wrap gap-2 justify-center text-sm mb-4">
-          <button class="border px-3 py-1 rounded-full hover:bg-gray-50">📍 Remoto</button>
-          <button class="border px-3 py-1 rounded-full hover:bg-gray-50">💻 Freelance</button>
-          <button class="border px-3 py-1 rounded-full hover:bg-gray-50">📦 Proyecto</button>
-          <button class="border px-3 py-1 rounded-full hover:bg-gray-50">🕓 Medio tiempo</button>
+          <button class="border border-gray-300 px-3 py-1 rounded-full hover:bg-gray-100">📍 Remoto</button>
+          <button class="border border-gray-300 px-3 py-1 rounded-full hover:bg-gray-100">💻 Freelance</button>
+          <button class="border border-gray-300 px-3 py-1 rounded-full hover:bg-gray-100">📦 Proyecto</button>
+          <button class="border border-gray-300 px-3 py-1 rounded-full hover:bg-gray-100">🕓 Medio tiempo</button>
         </div>
       </section>
 
       <!-- Jobs destacados -->
-      <section class="max-w-6xl mx-auto px-6 mb-20">
-        <h2 class="text-2xl font-bold mb-6">Ofertas destacadas</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-          <!-- CARD DE TRABAJO MOCK -->
+      <section class="max-w-8xl mx-auto px-6 mb-20">
+        <h2 class="text-2xl font-bold mb-6 text-center">Ofertas destacadas</h2>
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <!-- CARD REAL -->
-<div
-  v-for="job in filteredJobs"
-  :key="job._id"
-  class="border p-6 rounded-lg shadow-sm hover:shadow transition"
->
-  <div class="flex items-center justify-between mb-2">
-    <div
-      v-if="job.highlighted"
-      class="text-green-600 text-xs font-semibold bg-green-100 px-2 py-0.5 rounded-full"
-    >Destacado</div>
-    <div
-      v-if="job.isRemote"
-      class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full"
-    >Remoto</div>
-  </div>
+          <div
+        v-for="job in filteredJobs"
+        :key="job._id"
+        class="border border-gray-200 p-6 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 bg-white"
+          >
+        <div class="flex items-center justify-between mb-4">
+          <div
+            v-if="job.highlighted"
+            class="text-green-600 text-xs font-semibold bg-green-100 px-3 py-1 rounded-full"
+          >
+            🌟 Destacado
+          </div>
+          <div
+            v-if="job.isRemote"
+            class="text-xs text-blue-600 bg-blue-100 px-3 py-1 rounded-full"
+          >
+            🌍 Remoto
+          </div>
+        </div>
 
-  <h3 class="text-lg font-semibold">{{ job.title }}</h3>
-  <p class="text-gray-500 text-sm mb-2">{{ job.company }}</p>
-  <p class="text-sm text-gray-700 mb-3 line-clamp-2">{{ job.description }}</p>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ job.title }}</h3>
+        <p class="text-gray-500 text-sm mb-4">{{ job.company }}</p>
+        <p class="text-sm text-gray-700 mb-4 line-clamp-3">{{ job.description }}</p>
 
-  <div class="flex flex-wrap gap-2 mb-3">
-    <span
-      v-for="tag in job.tags"
-      :key="tag"
-      class="bg-gray-100 text-gray-600 px-2 py-1 text-xs rounded-full"
-    >
-      {{ tag }}
-    </span>
-  </div>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span
+            v-for="tag in job.tags"
+            :key="tag"
+            class="bg-gray-200 text-gray-700 px-3 py-1 text-xs rounded-full"
+          >
+            #{{ tag }}
+          </span>
+        </div>
 
-  <p class="text-sm font-medium mb-3">
-    {{ job.salaryRange?.min }}-{{ job.salaryRange?.max }}/{{ job.salaryRange?.type }} · {{ job.duration }}
-  </p>
+        <p class="text-sm font-medium text-gray-800 mb-4">
+          💰 {{ job.salaryRange?.min }}-{{ job.salaryRange?.max }}/{{ job.salaryRange?.type }} · ⏳ {{ job.duration }}
+        </p>
 
-  <router-link
-    :to="`/jobs/${job._id}`"
-    class="inline-block bg-green-600 text-white text-sm px-4 py-2 rounded-md hover:bg-green-700"
-  >
-    Ver detalles
-  </router-link>
-</div>
-
+        <router-link
+          :to="`/jobs/${job._id}`"
+          class="inline-block bg-gradient-to-r from-green-500 to-green-600 text-white text-sm px-5 py-2 rounded-md hover:from-green-600 hover:to-green-700 transition"
+        >
+          Ver detalles
+        </router-link>
+          </div>
         </div>
       </section>
 
       <!-- ¿Cómo funciona? -->
-      <section class="bg-gray-50 py-20 px-6">
+      <section class="bg-white py-20 px-6">
         <div class="max-w-6xl mx-auto text-center">
           <h2 class="text-3xl font-bold mb-12">¿Cómo funciona?</h2>
           <div class="grid md:grid-cols-3 gap-10">
