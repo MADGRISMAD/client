@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import AuthService from '@/services/AuthService'
+import AuthService from '../services/AuthService'
 
 const user = ref(AuthService.getUser())
 
