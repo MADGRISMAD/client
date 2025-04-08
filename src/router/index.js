@@ -18,7 +18,7 @@ const routes = [
     component: () => import('../pages/JobDetail.vue')
   },
 
-  // Nueva ruta: Crear oferta (solo employer)
+  // Crear oferta (solo employers)
   {
     path: '/jobs/create',
     name: 'CreateJob',
@@ -26,12 +26,27 @@ const routes = [
     meta: { requiresAuth: true, onlyEmployer: true }
   },
 
-  // Ruta protegida general
+  // Mis vacantes (solo employers)
+  {
+    path: '/my-jobs',
+    name: 'MyJobs',
+    component: () => import('../pages/MyJobs.vue'),
+    meta: { requiresAuth: true, onlyEmployer: true }
+  },
+
+  // Perfil
   {
     path: '/profile',
     name: 'Profile',
     component: () => import('../pages/Profile.vue'),
     meta: { requiresAuth: true }
+  },
+
+  // Ruta opcional para usuarios no autorizados
+  {
+    path: '/unauthorized',
+    name: 'Unauthorized',
+    component: () => import('../pages/Unauthorized.vue')
   }
 ]
 
@@ -40,17 +55,17 @@ const router = createRouter({
   routes
 })
 
-// 🔐 Protección de rutas privadas y por rol
+// 🔐 Protección de rutas
 router.beforeEach((to, from, next) => {
   const isLoggedIn = AuthService.isLoggedIn()
-  const user = AuthService.getUser() // debes tener este método
+  const user = AuthService.getUser()
 
   if (to.meta.requiresAuth && !isLoggedIn) {
     return next('/login')
   }
 
   if (to.meta.onlyEmployer && user?.role !== 'employer') {
-    return next('/unauthorized') // puedes crear una vista para esto
+    return next('/unauthorized')
   }
 
   next()

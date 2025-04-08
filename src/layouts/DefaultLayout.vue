@@ -15,7 +15,6 @@
         <a href="#" class="hover:text-green-600">Cómo funciona</a>
         <a href="#" class="hover:text-green-600">Para empresas</a>
 
-        <!-- Mostrar solo si es employer -->
         <router-link
           v-if="isLoggedIn() && user?.role === 'employer'"
           to="/jobs/create"
@@ -34,18 +33,35 @@
         </button>
 
         <template v-if="isLoggedIn()">
-          <router-link
-            to="/profile"
-            class="px-4 py-2 rounded-md text-sm hover:bg-gray-100"
-          >
-            Perfil
-          </router-link>
-          <button
-            @click="handleLogout"
-            class="text-sm text-red-500 hover:underline"
-          >
-            Cerrar sesión
-          </button>
+          <!-- Menú de usuario -->
+          <div class="relative group">
+            <button class="px-4 py-2 rounded-md text-sm bg-gray-50 hover:bg-gray-100 border border-gray-300">
+              Perfil ▾
+            </button>
+            <div class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden group-hover:block z-10">
+              <router-link
+                :to="user?.role === 'employer' ? '/my-jobs' : '/profile'"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                {{ user?.role === 'employer' ? 'Mis vacantes' : 'Mi perfil' }}
+              </router-link>
+
+              <router-link
+                v-if="user?.role === 'student'"
+                to="/my-applications"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Mis postulaciones
+              </router-link>
+
+              <button
+                @click="handleLogout"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
         </template>
 
         <template v-else>
@@ -117,7 +133,6 @@
         </div>
       </div>
 
-      <!-- Línea inferior -->
       <div class="text-center text-xs text-gray-400 mt-10 border-t pt-4">
         © {{ new Date().getFullYear() }} internships.gg. Todos los derechos reservados.
       </div>
