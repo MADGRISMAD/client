@@ -12,14 +12,14 @@ const routes = [
   { path: '/register', name: 'Register', component: Register },
   { path: '/jobs', name: 'Jobs', component: Jobs },
 
-  // Ruta dinámica: detalle de oferta
+  // Detalle de oferta
   {
     path: '/jobs/:id',
     name: 'JobDetail',
     component: () => import('../pages/JobDetail.vue')
   },
 
-  // Crear oferta (solo employers)
+  // Crear oferta (solo empleadores)
   {
     path: '/jobs/create',
     name: 'CreateJob',
@@ -27,12 +27,28 @@ const routes = [
     meta: { requiresAuth: true, onlyEmployer: true }
   },
 
-  // Mis vacantes (solo employers)
+  // Mis vacantes publicadas (solo empleadores)
   {
     path: '/my-jobs',
     name: 'MyJobs',
     component: () => import('../pages/MyJobs.vue'),
     meta: { requiresAuth: true, onlyEmployer: true }
+  },
+
+  // 👇 Nueva vista para administrar aplicantes
+  {
+    path: '/jobs/:id/applicants',
+    name: 'JobApplicants',
+    component: () => import('../pages/JobApplicants.vue'),
+    meta: { requiresAuth: true, onlyEmployer: true }
+  },
+
+  // Mis aplicaciones (solo estudiantes)
+  {
+    path: '/my-applications',
+    name: 'MyApplications',
+    component: () => import('../pages/MyApplications.vue'),
+    meta: { requiresAuth: true, onlyStudent: true }
   },
 
   // Perfil
@@ -43,14 +59,15 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Ruta opcional para usuarios no autorizados
+  // Página para usuarios no autorizados
   {
     path: '/unauthorized',
     name: 'Unauthorized',
     component: () => import('../pages/Unauthorized.vue')
   },
-  { path: '/empresas', name: 'Employers', component: EmployersPage },
 
+  // Página para empresas (landing)
+  { path: '/empresas', name: 'Employers', component: EmployersPage }
 ]
 
 const router = createRouter({
@@ -68,6 +85,10 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.onlyEmployer && user?.role !== 'employer') {
+    return next('/unauthorized')
+  }
+
+  if (to.meta.onlyStudent && user?.role !== 'student') {
     return next('/unauthorized')
   }
 
