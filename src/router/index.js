@@ -4,6 +4,7 @@ import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
 import Jobs from '../pages/Jobs.vue'
 import AuthService from '../services/AuthService'
+import EmployersPage from '../pages/EmployersPage.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -47,7 +48,9 @@ const routes = [
     path: '/unauthorized',
     name: 'Unauthorized',
     component: () => import('../pages/Unauthorized.vue')
-  }
+  },
+  { path: '/empresas', name: 'Employers', component: EmployersPage },
+
 ]
 
 const router = createRouter({
