@@ -1,68 +1,37 @@
 <template>
-    <DefaultLayout>
-      <div class="max-w-6xl mx-auto px-4 py-10">
-        <div class="flex items-center justify-between mb-6">
-          <h1 class="text-2xl font-bold">Mis vacantes publicadas</h1>
-          <router-link
-            to="/jobs/create"
-            class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
-          >
-            + Nueva vacante
-          </router-link>
-        </div>
-  
-        <div v-if="jobs.length === 0" class="text-gray-500">
-          No has publicado vacantes aún.
-        </div>
-  
-        <div v-else class="grid gap-6 md:grid-cols-2">
-          <div
-            v-for="job in jobs"
-            :key="job._id"
-            class="border border-gray-200 p-5 rounded-lg shadow-sm bg-white hover:shadow-md transition"
-          >
-            <div class="flex justify-between items-start mb-2">
-              <h2 class="text-lg font-semibold text-gray-800">{{ job.title }}</h2>
-              <span v-if="job.highlighted" class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                Destacado
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 mb-2">{{ job.company }}</p>
-            <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ job.description }}</p>
-  
-            <div class="flex justify-between items-center text-sm">
-              <p class="text-gray-500">Aplicantes: {{ job.applicants?.length || 0 }}</p>
-              <router-link
-                :to="`/jobs/${job._id}`"
-                class="text-green-600 hover:underline text-sm"
-              >
-                Ver detalles
-              </router-link>
-            </div>
+  <DefaultLayout>
+    <div class="max-w-5xl mx-auto py-10 px-4">
+      <h1 class="text-2xl font-bold mb-6">Mis vacantes publicadas</h1>
+
+      <div v-if="jobs.length === 0" class="text-gray-500">Aún no has publicado vacantes.</div>
+
+      <div v-else class="grid gap-4">
+        <div v-for="job in jobs" :key="job._id" class="border p-4 rounded shadow-sm bg-white">
+          <h2 class="text-lg font-semibold">{{ job.title }}</h2>
+          <p class="text-sm text-gray-600 mb-2">{{ job.description.slice(0, 100) }}...</p>
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <span>{{ job.salaryRange.min }} - {{ job.salaryRange.max }} {{ job.salaryRange.currency }} / {{ job.salaryRange.type }}</span>
+            <span v-if="job.isRemote">• Remoto</span>
+            <span v-if="job.highlighted">• Destacado</span>
           </div>
         </div>
       </div>
-    </DefaultLayout>
-  </template>
-  
-  <script setup>
-  import { onMounted, ref } from 'vue'
-  import DefaultLayout from '../layouts/DefaultLayout.vue'
-  import JobService from '../services/JobService'
-  import { useAuth } from '../composables/useAuth'
-  
-  const { user } = useAuth()
-  const jobs = ref([])
-  const error = ref('')
-  
-  onMounted(async () => {
-    try {
-      const all = await JobService.getAll()
-      jobs.value = all.filter(job => job.createdBy === user.value._id)
-    } catch (err) {
-      error.value = 'No se pudieron cargar tus vacantes'
-      console.error(err)
-    }
+    </div>
+  </DefaultLayout>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import DefaultLayout from '../layouts/DefaultLayout.vue'
+
+const jobs = ref([])
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  const res = await axios.get('http://localhost:5000/api/jobs/my-jobs', {
+    headers: { Authorization: `Bearer ${token}` }
   })
-  </script>
-  
+  jobs.value = res.data
+})
+</script>
