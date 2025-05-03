@@ -1,105 +1,191 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Navbar -->
-    <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur">
+    <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-gray-100">
       <div class="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
         <!-- Logo -->
-        <router-link to="/" class="flex items-center gap-2">
-          <span class="text-xl">🎓</span>
-          <span class="text-xl font-bold text-emerald-600">internships.gg</span>
+        <router-link to="/" class="flex items-center gap-2 group">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+            <span class="text-xl text-emerald-600">🎓</span>
+          </div>
+          <span class="text-xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">internships.gg</span>
         </router-link>
 
         <!-- Links -->
-        <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
-          <router-link to="/jobs" class="hover:text-emerald-600">Explorar</router-link>
-          <a href="#" class="hover:text-emerald-600">Categorías</a>
-          <a href="#" class="hover:text-emerald-600">Cómo funciona</a>
-          <router-link to="/empresas" class="hover:text-emerald-600">Para empresas</router-link>
+        <div class="hidden md:flex items-center gap-1">
+          <router-link 
+            to="/jobs" 
+            class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Explorar
+          </router-link>
+          <a 
+            href="#" 
+            class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Categorías
+          </a>
+          <a 
+            href="#" 
+            class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Cómo funciona
+          </a>
+          <router-link 
+            to="/empresas" 
+            class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Para empresas
+          </router-link>
           <router-link
             v-if="isLoggedIn() && user?.role === 'employer'"
             to="/jobs/create"
-            class="text-emerald-600 font-semibold hover:underline"
+            class="ml-2 px-4 py-2 rounded-md text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors"
           >
             Publicar vacante
           </router-link>
         </div>
 
         <!-- Right side -->
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
           <!-- 🔔 Notificaciones -->
-          <div class="relative" @mouseenter="showNotif = true" @mouseleave="showNotif = false">
-            <button class="relative">
+          <div class="relative" ref="notificationMenuRef">
+            <div 
+              class="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+              @mouseenter="showNotif = true"
+            >
               <span class="text-xl">🔔</span>
               <span
                 v-if="unreadCount > 0"
-                class="absolute top-0 right-0 h-2 w-2 rounded-full bg-emerald-600"
-              ></span>
-            </button>
+                class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center"
+              >
+                {{ unreadCount }}
+              </span>
+            </div>
             <div
               v-if="showNotif"
-              class="absolute right-0 mt-2 w-80 bg-white border rounded-md shadow-lg z-20 max-h-80 overflow-auto"
+              class="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-96 overflow-auto transition-all duration-200"
+              @mouseenter="showNotif = true"
+              @mouseleave="showNotif = false"
             >
-              <div class="px-4 py-2 border-b flex justify-between items-center">
-                <span class="font-semibold text-sm">Notificaciones</span>
-                <button @click="markAll" class="text-xs text-emerald-600 hover:underline">
+              <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-gray-800">Notificaciones</span>
+                  <span v-if="unreadCount > 0" class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">
+                    {{ unreadCount }} sin leer
+                  </span>
+                </div>
+                <button 
+                  @click="markAll" 
+                  class="text-xs text-emerald-600 hover:text-emerald-700 hover:underline transition-colors"
+                >
                   Marcar todas como leídas
                 </button>
               </div>
-              <div v-if="notifications.length === 0" class="p-4 text-sm text-gray-500">Sin notificaciones</div>
+              <div v-if="notifications.length === 0" class="p-6 text-center">
+                <span class="text-gray-400 text-sm">No hay notificaciones nuevas</span>
+              </div>
               <div
                 v-for="notif in notifications"
                 :key="notif._id"
-                class="px-4 py-3 border-b hover:bg-gray-50 text-sm cursor-pointer"
-                :class="{ 'bg-gray-100': !notif.read }"
+                class="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                :class="{ 
+                  'bg-emerald-50/50 hover:bg-emerald-50': !notif.read,
+                  'bg-white': notif.read
+                }"
                 @click="handleNotificationClick(notif)"
               >
-                {{ notif.message }}
+                <div class="flex items-start gap-3">
+                  <div class="flex-shrink-0 mt-1">
+                    <div 
+                      class="w-2 h-2 rounded-full"
+                      :class="notif.read ? 'bg-gray-300' : 'bg-emerald-500'"
+                    ></div>
+                  </div>
+                  <div class="flex-grow">
+                    <p class="text-sm text-gray-800 mb-1">{{ notif.message }}</p>
+                    <span class="text-xs text-gray-500">{{ formatDate(notif.createdAt) }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Menú de perfil -->
           <template v-if="isLoggedIn()">
-            <div class="relative" @mouseenter="showMenu = true" @mouseleave="showMenu = false">
-              <button class="px-4 py-2 rounded-md text-sm bg-gray-50 hover:bg-gray-100 border border-gray-300">
-                Perfil ▾
-              </button>
-              <transition name="fade">
-                <div
-                  v-if="showMenu"
-                  class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10"
-                >
+            <div class="relative" ref="profileMenuRef">
+              <div 
+                class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 cursor-pointer group"
+                @mouseenter="showMenu = true"
+              >
+                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <span class="text-emerald-600 text-sm font-medium">
+                    {{ user?.name?.charAt(0) || 'U' }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="text-sm font-medium text-gray-700">{{ user?.name?.split(' ')[0] || 'Usuario' }}</span>
+                  <span class="text-gray-400 group-hover:text-gray-500 transition-colors">▾</span>
+                </div>
+              </div>
+              <div
+                v-if="showMenu"
+                class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10 transition-all duration-200"
+                @mouseenter="showMenu = true"
+                @mouseleave="showMenu = false"
+              >
+                <div class="py-1">
+                  <div class="px-4 py-2 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <span class="text-emerald-600 text-base font-medium">
+                          {{ user?.name?.charAt(0) || 'U' }}
+                        </span>
+                      </div>
+                      <div>
+                        <p class="text-sm font-medium text-gray-900">{{ user?.name || 'Usuario' }}</p>
+                        <p class="text-xs text-gray-500">{{ user?.email }}</p>
+                      </div>
+                    </div>
+                  </div>
                   <router-link
                     :to="user?.role === 'employer' ? '/my-jobs' : '/profile'"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
+                    <span class="text-gray-500">👤</span>
                     {{ user?.role === 'employer' ? 'Mis vacantes' : 'Mi perfil' }}
                   </router-link>
                   <router-link
                     v-if="user?.role === 'student'"
                     to="/my-applications"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
+                    <span class="text-gray-500">📝</span>
                     Mis postulaciones
                   </router-link>
+                  <div class="border-t border-gray-100 my-1"></div>
                   <button
                     @click="handleLogout"
-                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
+                    <span class="text-gray-500">🚪</span>
                     Cerrar sesión
                   </button>
                 </div>
-              </transition>
+              </div>
             </div>
           </template>
 
           <template v-else>
-            <router-link to="/login" class="border border-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-50">
+            <router-link 
+              to="/login" 
+              class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+            >
               Iniciar sesión
             </router-link>
             <router-link
               to="/register"
-              class="bg-emerald-600 text-white px-4 py-2 rounded-md text-sm hover:bg-emerald-700"
+              class="px-4 py-2 rounded-md text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors"
             >
               Registrarse
             </router-link>
@@ -118,7 +204,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -130,6 +216,19 @@ const showMenu = ref(false)
 const showNotif = ref(false)
 const notifications = ref([])
 const unreadCount = ref(0)
+
+// Referencias para los elementos del menú
+const profileMenuRef = ref(null)
+const notificationMenuRef = ref(null)
+
+const handleClickOutside = (event) => {
+  if (profileMenuRef.value && !profileMenuRef.value.contains(event.target)) {
+    showMenu.value = false
+  }
+  if (notificationMenuRef.value && !notificationMenuRef.value.contains(event.target)) {
+    showNotif.value = false
+  }
+}
 
 const fetchNotifications = async () => {
   try {
@@ -174,8 +273,24 @@ const handleLogout = () => {
   router.push('/login')
 }
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diff = now - date
+  
+  if (diff < 60000) return 'Hace unos segundos'
+  if (diff < 3600000) return `Hace ${Math.floor(diff/60000)} minutos`
+  if (diff < 86400000) return `Hace ${Math.floor(diff/3600000)} horas`
+  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+}
+
 onMounted(() => {
   if (isLoggedIn()) fetchNotifications()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
