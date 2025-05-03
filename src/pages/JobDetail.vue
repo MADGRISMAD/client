@@ -1,144 +1,204 @@
 <template>
   <DefaultLayout>
-    <div class="bg-gradient-to-b from-white to-gray-50 min-h-screen">
-      <div class="max-w-7xl mx-auto py-10 px-4">
-        <!-- Back & Share -->
-        <div class="flex justify-between items-center mb-6">
-          <router-link to="/jobs" class="flex items-center gap-2 text-sm text-muted-foreground hover:text-emerald-600">
-            <span class="material-icons text-base">arrow_back</span>
+    <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <!-- Encabezado -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <router-link 
+            to="/jobs" 
+            class="flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+          >
+            <span class="text-lg">←</span>
             Volver a resultados
           </router-link>
-          <div class="flex gap-4">
-            <button class="flex items-center gap-1 text-sm text-muted-foreground hover:text-gray-700">
-              <span class="material-icons text-base">star_border</span>
+          <div class="flex items-center gap-3">
+            <button class="flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+              <span class="text-lg">⭐</span>
               Guardar
             </button>
-            <button class="flex items-center gap-1 text-sm text-muted-foreground hover:text-gray-700">
-              <span class="material-icons text-base">share</span>
+            <button class="flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+              <span class="text-lg">🔗</span>
               Compartir
             </button>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Main Content -->
-          <div class="lg:col-span-2 space-y-8">
-            <div class="flex gap-4 items-start">
-              <div class="h-16 w-16 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <span class="text-2xl font-bold text-emerald-600">{{ job?.company?.[0] || 'E' }}</span>
-              </div>
-              <div class="flex-1">
-                <h1 class="text-2xl font-bold text-gray-900">{{ job?.title }}</h1>
-                <p class="text-muted-foreground">{{ job?.company || 'Empresa desconocida' }}</p>
-
-                <div class="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
-                  <span v-if="job?.isRemote" class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Remoto</span>
-                  <span>Publicado: {{ publishedAgo }}</span>
-                  <span>{{ job?.applicants?.length || 0 }} aplicantes</span>
+          <!-- Contenido principal -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Información principal -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+              <div class="flex gap-4 items-start">
+                <div class="h-16 w-16 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <span class="text-2xl font-bold text-emerald-600">{{ job?.company?.[0] || 'E' }}</span>
                 </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ job?.title }}</h1>
+                    <span v-if="job?.highlighted" class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
+                      🌟 Destacado
+                    </span>
+                  </div>
+                  <p class="text-gray-600">{{ job?.company || 'Empresa desconocida' }}</p>
 
-                <div class="flex flex-wrap gap-2 mt-3">
-                  <span
-                    v-for="tag in job?.tags || []"
-                    :key="tag"
-                    class="bg-gray-200 text-gray-800 px-3 py-1 text-xs rounded-full"
-                  >
-                    #{{ tag }}
-                  </span>
+                  <div class="flex flex-wrap gap-3 mt-4">
+                    <div v-if="job?.isRemote" class="flex items-center gap-2 text-sm text-emerald-600">
+                      <span class="text-lg">📍</span>
+                      <span>Remoto</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                      <span class="text-lg">📅</span>
+                      <span>Publicado {{ publishedAgo }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                      <span class="text-lg">👥</span>
+                      <span>{{ job?.applicants?.length || 0 }} aplicantes</span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-2 mt-4">
+                    <span
+                      v-for="tag in job?.tags || []"
+                      :key="tag"
+                      class="bg-gray-100 text-gray-600 px-3 py-1 text-sm rounded-lg"
+                    >
+                      #{{ tag }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-              <h2 class="text-lg font-semibold mb-3 text-gray-900">Descripción del puesto</h2>
-              <p class="text-gray-700 whitespace-pre-line text-sm">{{ job?.description }}</p>
+            <!-- Descripción -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-2xl">📝</span>
+                <h2 class="text-xl font-semibold text-gray-900">Descripción del puesto</h2>
+              </div>
+              <p class="text-gray-600 whitespace-pre-line">{{ job?.description }}</p>
             </div>
 
+            <!-- Responsabilidades -->
             <div
               v-if="job?.responsibilities?.length"
-              class="bg-white border border-gray-100 rounded-xl shadow-sm p-6"
+              class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6"
             >
-              <h2 class="text-lg font-semibold mb-3 text-gray-900">Responsabilidades</h2>
-              <ul class="list-disc ml-5 space-y-2 text-sm text-gray-700">
-                <li v-for="(resp, idx) in job.responsibilities" :key="idx">{{ resp }}</li>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-2xl">🎯</span>
+                <h2 class="text-xl font-semibold text-gray-900">Responsabilidades</h2>
+              </div>
+              <ul class="space-y-3">
+                <li v-for="(resp, idx) in job.responsibilities" :key="idx" class="flex items-start gap-3 text-gray-600">
+                  <span class="text-emerald-600 mt-1">•</span>
+                  <span>{{ resp }}</span>
+                </li>
               </ul>
             </div>
 
+            <!-- Requisitos -->
             <div
               v-if="job?.requirements?.length"
-              class="bg-white border border-gray-100 rounded-xl shadow-sm p-6"
+              class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6"
             >
-              <h2 class="text-lg font-semibold mb-3 text-gray-900">Requisitos</h2>
-              <ul class="list-disc ml-5 space-y-2 text-sm text-gray-700">
-                <li v-for="(req, idx) in job.requirements" :key="idx">{{ req }}</li>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-2xl">✅</span>
+                <h2 class="text-xl font-semibold text-gray-900">Requisitos</h2>
+              </div>
+              <ul class="space-y-3">
+                <li v-for="(req, idx) in job.requirements" :key="idx" class="flex items-start gap-3 text-gray-600">
+                  <span class="text-emerald-600 mt-1">•</span>
+                  <span>{{ req }}</span>
+                </li>
               </ul>
             </div>
 
+            <!-- Beneficios -->
             <div
               v-if="job?.benefits?.length"
-              class="bg-white border border-gray-100 rounded-xl shadow-sm p-6"
+              class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6"
             >
-              <h2 class="text-lg font-semibold mb-3 text-gray-900">Beneficios</h2>
-              <ul class="list-disc ml-5 space-y-2 text-sm text-gray-700">
-                <li v-for="(benefit, idx) in job.benefits" :key="idx">{{ benefit }}</li>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-2xl">🎁</span>
+                <h2 class="text-xl font-semibold text-gray-900">Beneficios</h2>
+              </div>
+              <ul class="space-y-3">
+                <li v-for="(benefit, idx) in job.benefits" :key="idx" class="flex items-start gap-3 text-gray-600">
+                  <span class="text-emerald-600 mt-1">•</span>
+                  <span>{{ benefit }}</span>
+                </li>
               </ul>
             </div>
 
-            <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-              <h2 class="text-lg font-semibold mb-3 text-gray-900">Trabajos similares</h2>
-              <div class="space-y-4 text-sm">
-                <div class="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition">
-                  <h3 class="font-semibold">Desarrollador Frontend Vue.js</h3>
-                  <p class="text-muted-foreground">DigitalNew - Remoto</p>
+            <!-- Trabajos similares -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-2xl">🔍</span>
+                <h2 class="text-xl font-semibold text-gray-900">Trabajos similares</h2>
+              </div>
+              <div class="space-y-4">
+                <div class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors">
+                  <h3 class="font-semibold text-gray-900">Desarrollador Frontend Vue.js</h3>
+                  <p class="text-gray-600">DigitalNew - Remoto</p>
                 </div>
-                <div class="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition">
-                  <h3 class="font-semibold">UX/UI Designer Junior</h3>
-                  <p class="text-muted-foreground">CreativeStudio - Híbrido</p>
+                <div class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors">
+                  <h3 class="font-semibold text-gray-900">UX/UI Designer Junior</h3>
+                  <p class="text-gray-600">CreativeStudio - Híbrido</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Sidebar -->
-          <aside v-if="canApply" class="space-y-4 h-fit lg:sticky lg:top-6">
-            <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-              <h2 class="text-lg font-semibold mb-4 text-gray-900">Aplicar a esta vacante</h2>
-              <div class="text-sm space-y-3 mb-6 text-gray-700">
-                <div class="flex justify-between">
-                  <span class="text-gray-500 font-medium">Compensación:</span>
-                  <span class="text-green-700 font-semibold">{{ salaryFormatted }}</span>
+          <!-- Barra lateral -->
+          <aside v-if="canApply" class="space-y-6 h-fit lg:sticky lg:top-6">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-2xl">🚀</span>
+                <h2 class="text-xl font-semibold text-gray-900">Aplicar a esta vacante</h2>
+              </div>
+              
+              <div class="space-y-4 mb-6">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Compensación:</span>
+                  <span class="text-emerald-600 font-semibold">{{ salaryFormatted }}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-500 font-medium">Duración:</span>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Duración:</span>
                   <span>{{ job?.duration || 'No especificada' }}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-500 font-medium">Dedicación:</span>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Dedicación:</span>
                   <span>{{ job?.dedication || 'No especificada' }}</span>
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm mb-1 font-medium text-gray-700">Carta de presentación</label>
-                <textarea
-                  v-model="coverLetter"
-                  class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm mb-3"
-                  rows="4"
-                  placeholder="Habla brevemente de tu interés y experiencia..."
-                ></textarea>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Carta de presentación</label>
+                  <textarea
+                    v-model="coverLetter"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                    rows="4"
+                    placeholder="Habla brevemente de tu interés y experiencia..."
+                  ></textarea>
+                </div>
 
                 <button
                   @click="handleApply"
-                  class="w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 text-sm font-medium"
+                  class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
                 >
+                  <span class="text-lg">📝</span>
                   Aplicar ahora
                 </button>
 
-                <p v-if="success" class="text-green-600 text-sm mt-2">{{ success }}</p>
-                <p v-if="error" class="text-red-500 text-sm mt-2">{{ error }}</p>
+                <div v-if="success" class="bg-emerald-50 text-emerald-700 px-4 py-3 rounded-xl text-sm">
+                  {{ success }}
+                </div>
+                <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded-xl text-sm">
+                  {{ error }}
+                </div>
 
-                <p class="text-xs text-gray-400 mt-3">
-                  Al aplicar, aceptas nuestros <a href="#" class="underline">términos y condiciones</a>.
+                <p class="text-xs text-gray-400">
+                  Al aplicar, aceptas nuestros <a href="#" class="text-emerald-600 hover:underline">términos y condiciones</a>.
                 </p>
               </div>
             </div>
