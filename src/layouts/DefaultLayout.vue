@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col">
     <!-- Navbar -->
     <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-gray-100">
-      <div class="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
+      <div class="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2 group">
           <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
@@ -11,7 +11,19 @@
           <span class="text-xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">internships.gg</span>
         </router-link>
 
-        <!-- Links -->
+        <!-- Mobile menu button -->
+        <button 
+          @click="showMobileMenu = !showMobileMenu"
+          class="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+        >
+          <div class="w-6 h-5 flex flex-col justify-between">
+            <span class="block w-full h-0.5 bg-gray-600 transition-transform" :class="{'rotate-45 translate-y-2': showMobileMenu}"></span>
+            <span class="block w-full h-0.5 bg-gray-600 transition-opacity" :class="{'opacity-0': showMobileMenu}"></span>
+            <span class="block w-full h-0.5 bg-gray-600 transition-transform" :class="{'-rotate-45 -translate-y-2': showMobileMenu}"></span>
+          </div>
+        </button>
+
+        <!-- Desktop Links -->
         <div class="hidden md:flex items-center gap-1">
           <router-link 
             to="/jobs" 
@@ -47,7 +59,7 @@
         </div>
 
         <!-- Right side -->
-        <div class="flex items-center gap-2">
+        <div class="hidden md:flex items-center gap-2">
           <!-- 🔔 Notificaciones -->
           <div class="relative" ref="notificationMenuRef">
             <div 
@@ -192,6 +204,74 @@
           </template>
         </div>
       </div>
+
+      <!-- Mobile menu -->
+      <div 
+        v-if="showMobileMenu"
+        class="md:hidden absolute top-16 inset-x-0 bg-white border-b border-gray-100 shadow-lg"
+      >
+        <div class="px-4 py-3 space-y-1">
+          <router-link 
+            to="/jobs" 
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Explorar
+          </router-link>
+          <a 
+            href="#" 
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Categorías
+          </a>
+          <a 
+            href="#" 
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Cómo funciona
+          </a>
+          <router-link 
+            to="/empresas" 
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+          >
+            Para empresas
+          </router-link>
+          <template v-if="isLoggedIn()">
+            <router-link
+              :to="user?.role === 'employer' ? '/my-jobs' : '/profile'"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+            >
+              {{ user?.role === 'employer' ? 'Mis vacantes' : 'Mi perfil' }}
+            </router-link>
+            <router-link
+              v-if="user?.role === 'student'"
+              to="/my-applications"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+            >
+              Mis postulaciones
+            </router-link>
+            <button
+              @click="handleLogout"
+              class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 transition-colors"
+            >
+              Cerrar sesión
+            </button>
+          </template>
+          <template v-else>
+            <router-link 
+              to="/login" 
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+            >
+              Iniciar sesión
+            </router-link>
+            <router-link
+              to="/register"
+              class="block px-3 py-2 rounded-md text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors"
+            >
+              Registrarse
+            </router-link>
+          </template>
+        </div>
+      </div>
     </header>
 
     <!-- Main content -->
@@ -199,7 +279,74 @@
       <slot />
     </main>
 
-    <!-- Footer omitido por brevedad -->
+    <!-- Footer -->
+    <footer class="bg-black text-gray-300">
+      <!-- Upper footer -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-4">Sobre nosotros</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Nuestra misión</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Equipo</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Carreras</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-4">Para estudiantes</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Explorar trabajos</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Categorías</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Cómo funciona</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-4">Para empresas</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Publicar vacante</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Planes</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Recursos</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Términos</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Privacidad</a></li>
+              <li><a href="#" class="hover:text-emerald-400 transition-colors">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lower footer -->
+      <div class="border-t border-gray-800 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <span class="text-xl text-emerald-600">🎓</span>
+              </div>
+              <span class="text-lg font-bold text-white">internships.gg</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">
+                <span class="text-xl">📱</span>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">
+                <span class="text-xl">📧</span>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">
+                <span class="text-xl">💼</span>
+              </a>
+            </div>
+            <p class="text-sm text-gray-400">
+              © 2024 internships.gg. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -214,6 +361,7 @@ const router = useRouter()
 
 const showMenu = ref(false)
 const showNotif = ref(false)
+const showMobileMenu = ref(false)
 const notifications = ref([])
 const unreadCount = ref(0)
 
