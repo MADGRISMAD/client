@@ -4,9 +4,9 @@
         <!-- Back -->
         <router-link
           to="/my-jobs"
-          class="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-emerald-600 mb-6"
+          class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors mb-6"
         >
-          <span class="material-icons text-base">arrow_back</span>
+          <span>⬅️</span>
           Volver a mis vacantes
         </router-link>
   
@@ -18,22 +18,22 @@
           <div class="flex-1">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h1 class="text-2xl font-bold">{{ job?.title }}</h1>
-                <p class="text-muted-foreground">{{ job?.company }}</p>
+                <h1 class="text-2xl font-bold text-gray-900">{{ job?.title }}</h1>
+                <p class="text-gray-600">{{ job?.company }}</p>
               </div>
-              <span class="bg-emerald-100 text-emerald-800 px-3 py-1 text-xs rounded-full">Activa</span>
+              <span class="bg-emerald-100 text-emerald-800 px-3 py-1 text-xs rounded-full font-medium">Activa</span>
             </div>
   
-            <div class="flex flex-wrap gap-4 mt-4 text-sm text-muted-foreground">
-              <div class="flex items-center gap-1">
+            <div class="flex flex-wrap gap-4 mt-4">
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-600">
                 <span class="material-icons text-base">schedule</span>
                 {{ job?.duration || 'No especificada' }}
               </div>
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-600">
                 <span class="material-icons text-base">event</span>
                 Publicada el {{ formatDate(job?.createdAt) }}
               </div>
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-600">
                 <span class="material-icons text-base">group</span>
                 {{ applicants.length }} aplicantes
               </div>
@@ -45,28 +45,32 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Sidebar: Lista de aplicantes -->
           <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-2">Aplicantes</h2>
-            <p class="text-sm text-muted-foreground mb-4">{{ applicants.length }} aplicantes en total</p>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900">Aplicantes</h2>
+                <p class="text-sm text-gray-500">{{ applicants.length }} aplicantes en total</p>
+              </div>
+            </div>
   
             <ul class="space-y-2">
               <li
                 v-for="a in applicants"
                 :key="a._id"
                 @click="selectApplicant(a)"
-                class="flex gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 border border-transparent"
-                :class="{ 'border border-emerald-500 bg-gray-50': selected?.user._id === a.user._id }"
+                class="flex gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 border border-transparent transition-colors"
+                :class="{ 'border border-emerald-500 bg-emerald-50/50': selected?.user._id === a.user._id }"
               >
                 <div class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center font-semibold text-emerald-600">
                   {{ a.user.fullName.split(' ').map(n => n.charAt(0)).join('').slice(0,2) }}
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex justify-between">
-                    <p class="text-sm font-medium truncate">{{ a.user.fullName }}</p>
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ a.user.fullName }}</p>
                     <span class="text-xs font-medium rounded-full px-2 py-0.5" :class="badgeClass(a.status)">
                       {{ statusLabel(a.status) }}
                     </span>
                   </div>
-                  <p class="text-xs text-muted-foreground truncate">{{ a.user.university }}</p>
+                  <p class="text-xs text-gray-500 truncate">{{ a.user.university }}</p>
                   <div class="flex flex-wrap gap-1 mt-1">
                     <span
                       v-for="(skill, i) in a.user.skills.slice(0, 3)"
@@ -76,7 +80,7 @@
                       {{ skill }}
                     </span>
                   </div>
-                  <p class="text-[10px] text-muted-foreground mt-1">Aplicó el {{ formatDate(a.appliedAt) }}</p>
+                  <p class="text-[10px] text-gray-400 mt-1">Aplicó el {{ formatDate(a.appliedAt) }}</p>
                 </div>
               </li>
             </ul>
@@ -89,22 +93,27 @@
                 {{ selected.user.fullName.split(' ').map(n => n.charAt(0)).join('').slice(0,2) }}
               </div>
               <div class="flex-1">
-                <div class="flex justify-between items-start flex-wrap">
+                <div class="flex justify-between items-start flex-wrap gap-4">
                   <div>
-                    <h2 class="text-lg font-semibold">{{ selected.user.fullName }}</h2>
-                    <p class="text-sm text-muted-foreground">{{ selected.user.degree }}</p>
+                    <h2 class="text-lg font-semibold text-gray-900">{{ selected.user.fullName }}</h2>
+                    <p class="text-sm text-gray-600">{{ selected.user.degree }}</p>
                   </div>
-                  <select
-                    v-model="selected.status"
-                    @change="updateStatus(selected.status)"
-                    class="border border-gray-300 px-2 py-1 rounded-md text-sm"
-                  >
-                    <option value="applied">Aplicado</option>
-                    <option value="viewed">Revisado</option>
-                    <option value="interview">Entrevista</option>
-                    <option value="hired">Contratado</option>
-                    <option value="rejected">Rechazado</option>
-                  </select>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      v-for="status in statuses"
+                      :key="status.value"
+                      @click="updateStatus(status.value)"
+                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                      :class="[
+                        selected.status === status.value 
+                          ? status.activeClass 
+                          : status.inactiveClass
+                      ]"
+                    >
+                      <span class="material-icons text-sm">{{ status.icon }}</span>
+                      <span>{{ status.label }}</span>
+                    </button>
+                  </div>
                 </div>
   
                 <div class="flex flex-wrap gap-2 mt-2">
@@ -120,26 +129,55 @@
             </div>
   
             <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700 mb-6">
-              <div><span class="font-medium">Email:</span> {{ selected.user.email }}</div>
-              <div><span class="font-medium">Universidad:</span> {{ selected.user.university }}</div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons text-gray-400 text-base">email</span>
+                <span>{{ selected.user.email }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons text-gray-400 text-base">school</span>
+                <span>{{ selected.user.university }}</span>
+              </div>
             </div>
   
-            <div class="mb-4">
-              <h3 class="text-sm font-semibold mb-1 text-gray-700">Carta de presentación</h3>
-              <p class="text-sm text-gray-600 whitespace-pre-line">{{ selected.coverLetter }}</p>
+            <div class="mb-6">
+              <h3 class="text-sm font-semibold mb-2 text-gray-900">Carta de presentación</h3>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600 whitespace-pre-line">{{ selected.coverLetter }}</p>
+              </div>
             </div>
   
             <div>
-              <h3 class="text-sm font-semibold mb-2 text-gray-700">Documentos y enlaces</h3>
-              <ul class="space-y-2 text-sm">
+              <h3 class="text-sm font-semibold mb-3 text-gray-900">Documentos y enlaces</h3>
+              <ul class="space-y-2">
                 <li v-if="selected.user.cvUrl">
-                  <a :href="selected.user.cvUrl" target="_blank" class="text-emerald-600 hover:underline">📄 CV - Descargar</a>
+                  <a 
+                    :href="selected.user.cvUrl" 
+                    target="_blank" 
+                    class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    <span class="material-icons text-base">description</span>
+                    <span>CV - Descargar</span>
+                  </a>
                 </li>
                 <li v-if="selected.user.portfolioUrl">
-                  <a :href="selected.user.portfolioUrl" target="_blank" class="text-emerald-600 hover:underline">🌐 Portafolio</a>
+                  <a 
+                    :href="selected.user.portfolioUrl" 
+                    target="_blank" 
+                    class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    <span class="material-icons text-base">language</span>
+                    <span>Portafolio</span>
+                  </a>
                 </li>
                 <li v-if="selected.user.githubUrl">
-                  <a :href="selected.user.githubUrl" target="_blank" class="text-emerald-600 hover:underline">💻 GitHub</a>
+                  <a 
+                    :href="selected.user.githubUrl" 
+                    target="_blank" 
+                    class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    <span class="material-icons text-base">code</span>
+                    <span>GitHub</span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -161,25 +199,55 @@
   const selected = ref(null)
   const job = ref(null)
   
+  const statuses = [
+    {
+      value: 'applied',
+      label: 'Aplicado',
+      icon: '📨',
+      activeClass: 'bg-blue-100 text-blue-800',
+      inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+    },
+    {
+      value: 'viewed',
+      label: 'Revisado',
+      icon: '👁️',
+      activeClass: 'bg-purple-100 text-purple-800',
+      inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+    },
+    {
+      value: 'interview',
+      label: 'Entrevista',
+      icon: '📅',
+      activeClass: 'bg-amber-100 text-amber-800',
+      inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+    },
+    {
+      value: 'hired',
+      label: 'Contratado',
+      icon: '✅',
+      activeClass: 'bg-emerald-100 text-emerald-800',
+      inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+    },
+    {
+      value: 'rejected',
+      label: 'Rechazado',
+      icon: '❌',
+      activeClass: 'bg-red-100 text-red-800',
+      inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+    }
+  ]
+  
   const formatDate = (d) => {
     return new Date(d).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })
   }
   
-  const badgeClass = (status) => ({
-    applied: 'bg-blue-100 text-blue-800',
-    viewed: 'bg-purple-100 text-purple-800',
-    interview: 'bg-amber-100 text-amber-800',
-    hired: 'bg-emerald-100 text-emerald-800',
-    rejected: 'bg-red-100 text-red-800'
-  }[status])
+  const badgeClass = (status) => {
+    return statuses.find(s => s.value === status)?.activeClass || ''
+  }
   
-  const statusLabel = (status) => ({
-    applied: 'Aplicado',
-    viewed: 'Revisado',
-    interview: 'Entrevista',
-    hired: 'Contratado',
-    rejected: 'Rechazado'
-  }[status])
+  const statusLabel = (status) => {
+    return statuses.find(s => s.value === status)?.label || ''
+  }
   
   const selectApplicant = (a) => {
     selected.value = a
@@ -188,11 +256,16 @@
   const updateStatus = async (newStatus) => {
     if (!selected.value) return
     const token = localStorage.getItem('token')
-    await axios.put(
-      `http://localhost:5000/api/jobs/${route.params.id}/applicants/${selected.value._id}`,
-      { status: newStatus },
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
+    try {
+      await axios.put(
+        `http://localhost:5000/api/jobs/${route.params.id}/applicants/${selected.value._id}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      selected.value.status = newStatus
+    } catch (error) {
+      console.error('Error al actualizar el estado:', error)
+    }
   }
   
   onMounted(async () => {
