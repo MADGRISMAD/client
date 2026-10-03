@@ -1,18 +1,10 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Navbar -->
-    <header
-      :class="[
-        'sticky top-0 z-40 w-full backdrop-blur border-b',
-        isPaper ? 'nav-paper bg-paper/90 border-ink' : 'bg-white/95 border-gray-100'
-      ]"
-    >
+    <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-gray-100">
       <div class="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <!-- Logo -->
-        <router-link v-if="isPaper" to="/" class="font-grotesk text-xl font-bold tracking-tight text-ink">
-          internships<span class="text-signal">.gg</span>
-        </router-link>
-        <router-link v-else to="/" class="flex items-center gap-2 group">
+        <router-link to="/" class="flex items-center gap-2 group">
           <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
             <span class="text-xl text-emerald-600">🎓</span>
           </div>
@@ -283,12 +275,12 @@
     </header>
 
     <!-- Main content -->
-    <main :class="['flex-grow', isPaper ? 'bg-paper' : 'bg-gray-50']">
+    <main class="flex-grow bg-gray-50">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer :class="['bg-black text-gray-300', { 'footer-paper': isPaper }]">
+    <footer class="bg-black text-gray-300">
       <!-- Upper footer -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -331,10 +323,7 @@
       <div class="border-t border-gray-800 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
           <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-            <span v-if="isPaper" class="font-grotesk text-lg font-bold text-white">
-              internships<span class="text-signal">.gg</span>
-            </span>
-            <div v-else class="flex items-center gap-2">
+            <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
                 <span class="text-xl text-emerald-600">🎓</span>
               </div>
@@ -362,16 +351,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-
-const props = defineProps({
-  // 'paper' usa la paleta editorial de la landing
-  variant: { type: String, default: 'default' }
-})
-const isPaper = computed(() => props.variant === 'paper')
 
 const { logout, isLoggedIn, user } = useAuth()
 const router = useRouter()
@@ -460,19 +443,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.footer-paper a:hover {
-  color: var(--color-signal);
-}
-.nav-paper :is(a, button):hover {
-  color: var(--color-signal);
-  background-color: transparent;
-}
-.nav-paper .bg-emerald-600,
-.nav-paper .bg-emerald-600:hover {
-  background-color: var(--color-ink);
-  color: var(--color-paper);
-  border-radius: 0;
-}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.15s;
