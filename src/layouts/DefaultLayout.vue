@@ -31,18 +31,18 @@
           >
             Explorar
           </router-link>
-          <a 
-            href="#" 
+          <router-link 
+            to="/#categorias" 
             class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
           >
             Categorías
-          </a>
-          <a 
-            href="#" 
+          </router-link>
+          <router-link 
+            to="/#como-funciona" 
             class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
           >
             Cómo funciona
-          </a>
+          </router-link>
           <router-link 
             to="/empresas" 
             class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
@@ -217,18 +217,18 @@
           >
             Explorar
           </router-link>
-          <a 
-            href="#" 
+          <router-link 
+            to="/#categorias" 
             class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
           >
             Categorías
-          </a>
-          <a 
-            href="#" 
+          </router-link>
+          <router-link 
+            to="/#como-funciona" 
             class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
           >
             Cómo funciona
-          </a>
+          </router-link>
           <router-link 
             to="/empresas" 
             class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors"

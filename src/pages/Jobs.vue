@@ -127,11 +127,13 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import JobService from '../services/JobService'
 
+const route = useRoute()
 const jobs = ref([])
-const search = ref('')
+const search = ref(route.query.q || '')
 const showFilters = ref(false)
 const filters = ref({
   remote: false,
