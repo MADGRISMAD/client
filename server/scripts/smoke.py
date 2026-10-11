@@ -5,7 +5,7 @@ B=os.environ.get('API','http://localhost:4000')+'/api'
 def call(method, path, body=None, tok=None):
     req=urllib.request.Request(B+path, method=method, data=json.dumps(body).encode() if body is not None else None, headers={'Content-Type':'application/json', **({'Authorization':'Bearer '+tok} if tok else {})})
     try:
-        r=urllib.request.urlopen(req); t=r.read(); return r.status, (json.loads(t) if t else None)
+        r=urllib.request.urlopen(req, timeout=20); t=r.read(); return r.status, (json.loads(t) if t else None)
     except urllib.error.HTTPError as e:
         t=e.read(); return e.code, (json.loads(t) if t else None)
 def ok(cond, msg):
