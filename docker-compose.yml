@@ -1,0 +1,39 @@
+# IAplica en el VPS: Postgres + la app (sitio y API en :8080). Caddy atiende el HTTPS.
+# Las variables viven en .env, solo en el servidor (ver README).
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: iaplica
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: iaplica
+    # El VPS es chico y comparte máquina con otros proyectos: valores modestos.
+    command: >
+      postgres -c shared_buffers=128MB -c effective_cache_size=512MB -c work_mem=8MB
+      -c max_connections=60 -c random_page_cost=1.1 -c log_min_duration_statement=500
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iaplica -d iaplica"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    image: iaplica-app:latest   # lo construye GitHub Actions y lo sube el deploy
+    pull_policy: never
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://iaplica:${POSTGRES_PASSWORD}@db:5432/iaplica
+      PORT: "8080"
+    ports:
+      - "127.0.0.1:8084:8080"
+    mem_limit: 512m
+
+volumes:
+  pgdata:

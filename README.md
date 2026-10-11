@@ -1,4 +1,4 @@
-# Talentia — bolsa de trabajo para estudiantes
+# IAplica — bolsa de trabajo para estudiantes
 
 Frontend en **Vue 3 + Vite + Tailwind** y backend en **Rust (Axum + Tokio) + PostgreSQL**, con IA (Gemini) para
 buscar y recomendar empleos por significado.
@@ -72,6 +72,24 @@ Con Gemini real la búsqueda con IA suma el viaje de red de la consulta (la prim
 Sin `GEMINI_API_KEY` todo funciona menos `/api/ai/*` (responden 503 con un mensaje claro). Variables en
 `server/.env.example`. ponytail: el índice vive en el proceso; con varias instancias, cada una carga el suyo al
 arrancar. Para escalar a varias, pasar a pgvector (HNSW).
+
+## Producción (VPS)
+
+Cada `push` a `main` corre `.github/workflows/deploy.yml`: revisa y prueba la API, compila el sitio, construye **una sola
+imagen** (sitio + API, ~100 MB) en GitHub y la sube al VPS; ahí `docker compose` la levanta junto a Postgres.
+El sitio y la API salen por la misma dirección (`/api/…`), así que no hay CORS en producción.
+
+- Carpeta en el servidor: `~/iaplica` (`docker-compose.yml` y `.env`, que **solo vive allá**: contraseña de Postgres,
+  `JWT_SECRET` y `GEMINI_API_KEY`).
+- Caddy hace el HTTPS y manda todo al puerto `127.0.0.1:8084`.
+- Respaldo diario de la base con el resto de los proyectos (`respaldar-bases`, últimos 7 días).
+- Para activar la IA: poner `GEMINI_API_KEY` en `~/iaplica/.env` y `docker compose up -d`.
+- Contraseñas y gasto de IA están protegidos con límite de intentos por IP, y la respuesta lleva cabeceras de seguridad.
+
+### Dominio `iaplica.mx`
+1. Registrar el dominio y crear un registro **A** `iaplica.mx` → `15.235.62.27` (y otro para `www`).
+2. En el VPS, en `/etc/caddy/Caddyfile`, cambiar `iaplica.15-235-62-27.sslip.io` por `iaplica.mx, www.iaplica.mx`
+   y poner `CORS_ORIGIN=https://iaplica.mx` en `.env`; `sudo systemctl reload caddy`.
 
 ## Pruebas
 

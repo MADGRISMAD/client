@@ -7,6 +7,7 @@ mod auth;
 mod db;
 mod error;
 mod extract;
+mod guard;
 mod index;
 mod jobs;
 mod notifications;
@@ -15,10 +16,11 @@ mod users;
 use std::{net::SocketAddr, sync::Arc};
 
 use axum::{
-    routing::{get, post, put},
+    middleware,
+    routing::{any, get, post, put},
     Router,
 };
-use tower_http::{compression::CompressionLayer, cors::CorsLayer, trace::TraceLayer};
+use tower_http::{compression::CompressionLayer, cors::CorsLayer, services::{ServeDir, ServeFile}, trace::TraceLayer};
 
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
@@ -62,11 +64,26 @@ async fn main() {
 
     let state = AppState { pool, keys: Arc::new(auth::Keys::new(secret.as_bytes())), ai, index };
 
-    let app = Router::new()
-        .route("/api/health", get(health))
-        // usuarios
+    let per_min = |n| Arc::new(guard::Limiter::new(n, std::time::Duration::from_secs(60)));
+    // contraseñas: pocas por minuto y por IP; IA: cuesta dinero en cada llamada
+    let auth_limit = middleware::from_fn_with_state(per_min(30), guard::limit);
+    let ai_limit = middleware::from_fn_with_state(per_min(30), guard::limit);
+
+    let auth_routes = Router::new()
         .route("/api/users/register", post(users::register))
         .route("/api/users/login", post(users::login))
+        .layer(auth_limit);
+    let ai_routes = Router::new()
+        .route("/api/ai/search", post(ai::search))
+        .route("/api/ai/recommended", get(ai::recommended))
+        .route("/api/ai/improve-job", post(ai::improve_job))
+        .route("/api/ai/cover-letter", post(ai::cover_letter))
+        .layer(ai_limit);
+
+    let mut app = Router::new()
+        .route("/api/health", get(health))
+        .merge(auth_routes)
+        .merge(ai_routes)
         .route("/api/users/me", get(users::me).put(users::update_me))
         // vacantes (las rutas fijas ganan a «{id}»)
         .route("/api/jobs", get(jobs::list).post(jobs::create))
@@ -81,11 +98,17 @@ async fn main() {
         .route("/api/notifications", get(notifications::list))
         .route("/api/notifications/mark-all", put(notifications::mark_all))
         .route("/api/notifications/{id}/read", put(notifications::mark_read))
-        // IA
-        .route("/api/ai/search", post(ai::search))
-        .route("/api/ai/recommended", get(ai::recommended))
-        .route("/api/ai/improve-job", post(ai::improve_job))
-        .route("/api/ai/cover-letter", post(ai::cover_letter))
+        // una ruta /api que no existe responde JSON, no la página del sitio
+        .route("/api/{*rest}", any(|| async { error::AppError::NotFound }))
+        .with_state(state);
+
+    // El sitio (Vue compilado) lo sirve el mismo proceso: una sola dirección, sin CORS en producción.
+    if let Ok(dir) = std::env::var("STATIC_DIR") {
+        let index = ServeFile::new(format!("{dir}/index.html"));
+        app = app.fallback_service(ServeDir::new(&dir).fallback(index));
+        tracing::info!("sirviendo el sitio desde {dir}");
+    }
+    let app = app
         .layer(CompressionLayer::new())
         .layer(match std::env::var("CORS_ORIGIN") {
             Ok(o) if !o.is_empty() => CorsLayer::new()
@@ -95,7 +118,7 @@ async fn main() {
             _ => CorsLayer::very_permissive(),
         })
         .layer(TraceLayer::new_for_http())
-        .with_state(state);
+        .layer(middleware::from_fn(guard::headers));
 
     let port: u16 = env("PORT", "4000").parse().expect("PORT inválido");
     let addr = SocketAddr::from(([0, 0, 0, 0], port));

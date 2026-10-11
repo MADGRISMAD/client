@@ -84,7 +84,7 @@ impl VecIndex {
     /// Las `k` vacantes más parecidas (id, coseno), de mayor a menor. `q` ya viene normalizado.
     pub fn top_k(&self, q: &[f32], k: usize) -> Vec<(Uuid, f32)> {
         let r = self.0.read().unwrap();
-        let mut scored: Vec<(f32, usize)> = r.data.chunks_exact(DIMS).enumerate().map(|(i, v)| (dot(q, v), i)).collect();
+        let mut scored: Vec<(f32, usize)> = r.data.as_chunks::<DIMS>().0.iter().enumerate().map(|(i, v)| (dot(q, v), i)).collect();
         let k = k.min(scored.len());
         if k == 0 {
             return vec![];

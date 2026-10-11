@@ -3,7 +3,7 @@
     <section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 py-16 px-4">
       <div class="w-full max-w-2xl bg-white border border-gray-200 rounded-2xl shadow-md p-10 space-y-6">
         <div class="text-center">
-          <h2 class="text-3xl font-bold text-gray-900">Crear cuenta en Talentia</h2>
+          <h2 class="text-3xl font-bold text-gray-900">Crear cuenta en IAplica</h2>
           <p class="text-sm text-gray-500 mt-1">Únete como estudiante o empresa</p>
         </div>
 

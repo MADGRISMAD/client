@@ -1,0 +1,81 @@
+name: Deploy al VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HOST: ubuntu@15.235.62.27
+      URL: https://iaplica.15-235-62-27.sslip.io
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # Si las pruebas fallan no se publica nada.
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server
+      - name: Pruebas y revisión de la API
+        working-directory: server
+        run: cargo clippy --release -- -D warnings && cargo test --release
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Compilar el sitio (revisa que no se rompa)
+        run: npm ci && npm run build
+
+      # La imagen se construye aquí (el VPS es chico) y se sube ya hecha.
+      - uses: docker/setup-buildx-action@v3
+      - name: Construir la imagen
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: iaplica-app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Llave SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      # El .env vive solo en el servidor: no se toca.
+      - name: Subir imagen y configuración
+        run: |
+          ssh "$HOST" 'mkdir -p ~/iaplica'
+          scp docker-compose.yml "$HOST:~/iaplica/docker-compose.yml"
+          docker save iaplica-app:latest | gzip | ssh "$HOST" 'docker load'
+
+      - name: Reiniciar
+        run: ssh "$HOST" 'cd ~/iaplica && docker compose up -d --remove-orphans && docker image prune -f >/dev/null'
+
+      - name: Comprobar que responde
+        run: |
+          for i in $(seq 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/api/health" || true)
+            [ "$code" = 200 ] && echo "OK ($code)" && exit 0
+            sleep 3
+          done
+          echo "No respondió 200 (último: $code)"; exit 1

@@ -9,6 +9,7 @@ pub enum AppError {
     NotFound,
     Conflict(String),
     Unavailable(String),
+    TooMany,
     Internal(String),
 }
 
@@ -21,6 +22,7 @@ impl IntoResponse for AppError {
             AppError::NotFound => (StatusCode::NOT_FOUND, "No se encontró.".into()),
             AppError::Conflict(m) => (StatusCode::CONFLICT, m),
             AppError::Unavailable(m) => (StatusCode::SERVICE_UNAVAILABLE, m),
+            AppError::TooMany => (StatusCode::TOO_MANY_REQUESTS, "Demasiados intentos. Espera un minuto e inténtalo de nuevo.".into()),
             AppError::Internal(m) => {
                 tracing::error!("{m}");
                 (StatusCode::INTERNAL_SERVER_ERROR, "Algo salió mal. Inténtalo de nuevo.".into())

@@ -1,0 +1,7 @@
+.git
+node_modules
+dist
+server/target
+server/.env
+.env
+*.log
