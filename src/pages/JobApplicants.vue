@@ -189,6 +189,7 @@
   
   
   <script setup>
+import { API_URL } from '../config'
   import { ref, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
   import axios from 'axios'
@@ -258,7 +259,7 @@
     const token = localStorage.getItem('token')
     try {
       await axios.put(
-        `http://localhost:5000/api/jobs/${route.params.id}/applicants/${selected.value._id}`,
+        `${API_URL}/api/jobs/${route.params.id}/applicants/${selected.value._id}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       )
@@ -271,10 +272,10 @@
   onMounted(async () => {
     const token = localStorage.getItem('token')
     const [applicantsRes, jobRes] = await Promise.all([
-      axios.get(`http://localhost:5000/api/jobs/${route.params.id}/applicants`, {
+      axios.get(`${API_URL}/api/jobs/${route.params.id}/applicants`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      axios.get(`http://localhost:5000/api/jobs/${route.params.id}`, {
+      axios.get(`${API_URL}/api/jobs/${route.params.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
     ])

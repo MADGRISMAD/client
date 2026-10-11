@@ -351,6 +351,7 @@
 </template>
 
 <script setup>
+import { API_URL } from '../config'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useRouter } from 'vue-router'
@@ -381,7 +382,7 @@ const handleClickOutside = (event) => {
 const fetchNotifications = async () => {
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get('http://localhost:5000/api/notifications', {
+    const res = await axios.get(`${API_URL}/api/notifications`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     notifications.value = res.data
@@ -394,7 +395,7 @@ const fetchNotifications = async () => {
 const handleNotificationClick = async notif => {
   if (!notif.read) {
     const token = localStorage.getItem('token')
-    await axios.put(`http://localhost:5000/api/notifications/${notif._id}/read`, null, {
+    await axios.put(`${API_URL}/api/notifications/${notif._id}/read`, null, {
       headers: { Authorization: `Bearer ${token}` }
     })
     notif.read = true
@@ -406,7 +407,7 @@ const handleNotificationClick = async notif => {
 const markAll = async () => {
   try {
     const token = localStorage.getItem('token')
-    await axios.put('http://localhost:5000/api/notifications/mark-all', null, {
+    await axios.put(`${API_URL}/api/notifications/mark-all`, null, {
       headers: { Authorization: `Bearer ${token}` }
     })
     notifications.value.forEach(n => (n.read = true))

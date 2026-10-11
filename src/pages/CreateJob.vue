@@ -148,6 +148,7 @@
   </template>
   
   <script setup>
+import { API_URL } from '../config'
   import { ref, reactive, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import DefaultLayout from '../layouts/DefaultLayout.vue'
@@ -186,7 +187,7 @@
       success.value = ''
       
       const token = localStorage.getItem('token')
-      await axios.post('http://localhost:5000/api/jobs', form, {
+      await axios.post(`${API_URL}/api/jobs`, form, {
         headers: { Authorization: `Bearer ${token}` }
       })
       

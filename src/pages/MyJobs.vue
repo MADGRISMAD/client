@@ -170,6 +170,7 @@
 </template>
 
 <script setup>
+import { API_URL } from '../config'
 import { ref, onMounted, reactive, watch } from 'vue'
 import axios from 'axios'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
@@ -201,7 +202,7 @@ const formatDate = (dateString) => {
 }
 
 const fetchJobs = async () => {
-  const res = await axios.get('http://localhost:5000/api/jobs/my-jobs', {
+  const res = await axios.get(`${API_URL}/api/jobs/my-jobs`, {
     headers: { Authorization: `Bearer ${token}` }
   })
   jobs.value = res.data
@@ -221,7 +222,7 @@ watch(tagsString, val => {
 
 const handleUpdate = async () => {
   try {
-    await axios.put(`http://localhost:5000/api/jobs/${editingJob.value._id}`, form, {
+    await axios.put(`${API_URL}/api/jobs/${editingJob.value._id}`, form, {
       headers: { Authorization: `Bearer ${token}` }
     })
     editingJob.value = null
@@ -234,7 +235,7 @@ const handleUpdate = async () => {
 const deleteJob = async (id) => {
   if (confirm('¿Estás seguro de eliminar esta vacante?')) {
     try {
-      await axios.delete(`http://localhost:5000/api/jobs/${id}`, {
+      await axios.delete(`${API_URL}/api/jobs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchJobs()

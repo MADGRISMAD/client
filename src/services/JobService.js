@@ -1,14 +1,16 @@
+import { API_URL } from '../config'
 import axios from 'axios'
 
-const API = 'http://localhost:5000/api/jobs'
+const API = `${API_URL}/api/jobs`
 
 export default {
-  async getAll() {
-    const res = await axios.get(API)
+  /** Lista y busca. `params`: { q, remote, minSalary, limit, page }. */
+  async getAll(params = {}) {
+    const res = await axios.get(API, { params })
     return res.data
   },
   async getById(id) {
-    const res = await axios.get(`http://localhost:5000/api/jobs/${id}`)
+    const res = await axios.get(`${API_URL}/api/jobs/${id}`)
     return res.data
   },
   

@@ -1,6 +1,7 @@
+import { API_URL } from '../config'
 import axios from 'axios'
 
-const API = 'http://localhost:5000/api/users'
+const API = `${API_URL}/api/users`
 
 export default {
   async login(email, password) {

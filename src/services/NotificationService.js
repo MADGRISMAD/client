@@ -1,7 +1,8 @@
+import { API_URL } from '../config'
 // src/services/NotificationService.js
 import axios from 'axios'
 
-const API = 'http://localhost:5000/api/notifications'
+const API = `${API_URL}/api/notifications`
 
 export default {
   async getAll() {

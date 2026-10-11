@@ -117,6 +117,7 @@
 </template>
 
 <script setup>
+import { API_URL } from '../config'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
@@ -127,7 +128,7 @@ const showCalendar = ref(false)
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get('http://localhost:5000/api/jobs/my-applications', {
+    const res = await axios.get(`${API_URL}/api/jobs/my-applications`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

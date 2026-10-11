@@ -210,6 +210,7 @@
 </template>
 
 <script setup>
+import { API_URL } from '../config'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
@@ -247,7 +248,7 @@ const handleApply = async () => {
   try {
     const token = localStorage.getItem('token')
     await axios.post(
-      `http://localhost:5000/api/jobs/${job.value._id}/apply`,
+      `${API_URL}/api/jobs/${job.value._id}/apply`,
       { coverLetter: coverLetter.value },
       { headers: { Authorization: `Bearer ${token}` } }
     )

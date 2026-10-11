@@ -19,14 +19,26 @@
       <!-- Buscador y Filtros -->
       <div class="bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
         <div class="p-4 border-b border-gray-100">
-          <div class="relative">
+          <form @submit.prevent="searchWithAi" class="flex gap-2">
             <input
               v-model="search"
               type="text"
-              placeholder="🔍 Buscar por título, descripción o etiquetas..."
+              placeholder="🔍 Busca por título, o describe lo que quieres: «algo de diseño remoto para empezar»"
               class="w-full border border-gray-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
             />
-          </div>
+            <button
+              type="submit"
+              :disabled="aiLoading || search.trim().length < 2"
+              class="shrink-0 bg-emerald-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition"
+            >
+              {{ aiLoading ? 'Buscando…' : '✨ Buscar con IA' }}
+            </button>
+          </form>
+          <p v-if="aiResults" class="mt-2 text-xs text-gray-500">
+            Resultados por significado, de más a menos parecido.
+            <button type="button" @click="aiResults = null" class="text-emerald-600 hover:text-emerald-700 underline">Ver todas las ofertas</button>
+          </p>
+          <p v-if="aiError" class="mt-2 text-xs text-red-600">{{ aiError }}</p>
         </div>
 
         <div v-if="showFilters" class="p-4 border-b border-gray-100">
@@ -86,8 +98,13 @@
                 <p class="text-sm text-gray-500">{{ job.company || job.createdBy?.fullName }}</p>
               </div>
             </div>
-            <div v-if="job.isRemote" class="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg">
-              Remoto
+            <div class="flex flex-col items-end gap-1">
+              <div v-if="job.matchScore != null" class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">
+                {{ job.matchScore }}% de coincidencia
+              </div>
+              <div v-if="job.isRemote" class="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg">
+                Remoto
+              </div>
             </div>
           </div>
 
@@ -130,9 +147,14 @@ import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import JobService from '../services/JobService'
+import AiService from '../services/AiService'
+import AuthService from '../services/AuthService'
 
 const route = useRoute()
 const jobs = ref([])
+const aiResults = ref(null)
+const aiLoading = ref(false)
+const aiError = ref('')
 const search = ref(route.query.q || '')
 const showFilters = ref(false)
 const filters = ref({
@@ -149,7 +171,25 @@ onMounted(async () => {
   }
 })
 
+const searchWithAi = async () => {
+  aiError.value = ''
+  if (!AuthService.isLoggedIn()) {
+    aiError.value = 'Inicia sesión para buscar con IA.'
+    return
+  }
+  aiLoading.value = true
+  try {
+    // se ocultan las que casi no se parecen (menos de 10 %)
+    aiResults.value = (await AiService.search(search.value.trim())).filter(j => j.matchScore >= 10)
+  } catch (err) {
+    aiError.value = err.response?.data?.message || 'No se pudo buscar con IA. Inténtalo de nuevo.'
+  } finally {
+    aiLoading.value = false
+  }
+}
+
 const resetFilters = () => {
+  aiResults.value = null
   search.value = ''
   filters.value = {
     remote: false,
@@ -159,8 +199,9 @@ const resetFilters = () => {
 }
 
 const filteredJobs = computed(() => {
-  return jobs.value.filter(job => {
+  return (aiResults.value ?? jobs.value).filter(job => {
     const textMatch =
+      aiResults.value !== null ||
       job.title.toLowerCase().includes(search.value.toLowerCase()) ||
       job.description.toLowerCase().includes(search.value.toLowerCase()) ||
       job.tags?.some(tag => tag.toLowerCase().includes(search.value.toLowerCase()))

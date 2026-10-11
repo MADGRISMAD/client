@@ -1,5 +1,86 @@
-# Vue 3 + Vite
+# Client — bolsa de trabajo para estudiantes
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Frontend en **Vue 3 + Vite + Tailwind** y backend en **Rust (Axum + Tokio) + PostgreSQL**, con IA (Gemini) para
+buscar y recomendar empleos por significado.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+```
+src/      frontend (Vue)
+server/   API en Rust
+```
+
+## Arrancar
+
+```bash
+# 1. Base de datos (Postgres 14+, sin extensiones que instalar: usa pg_trgm y unaccent, que ya vienen)
+createdb empleos
+
+# 2. API (puerto 4000)
+cd server
+cp .env.example .env          # ajusta DATABASE_URL y JWT_SECRET
+export $(grep -v '^#' .env | xargs)
+cargo run --release           # aplica las migraciones al arrancar
+
+# 3. Frontend (otra terminal, desde la raíz)
+npm install && npm run dev    # http://localhost:5173
+```
+
+El frontend lee la API de `VITE_API_URL` (por defecto `http://localhost:4000`).
+> En macOS el puerto 5000 lo usa AirPlay, por eso la API usa el 4000.
+
+## API
+
+| Ruta | Quién | Qué hace |
+|---|---|---|
+| `POST /api/users/register`, `/login` · `GET/PUT /api/users/me` | todos | Cuenta. Estudiantes con correo `.edu` |
+| `GET /api/jobs?q=&remote=&minSalary=&limit=&page=` | público | Lista y busca (sin acentos, tolera errores de dedo) |
+| `GET /api/jobs/{id}` | público | Detalle |
+| `POST /api/jobs` · `PUT/DELETE /api/jobs/{id}` · `GET /api/jobs/my-jobs` | empleador | Publicar y administrar |
+| `POST /api/jobs/{id}/apply` · `GET /api/jobs/my-applications` | estudiante | Postularse y ver mis postulaciones |
+| `GET /api/jobs/{id}/applicants` · `PUT /api/jobs/{id}/applicants/{app}` | empleador | Ver postulantes y cambiar su estado |
+| `GET /api/notifications` · `PUT …/{id}/read` · `PUT …/mark-all` | sesión | Avisos |
+| `POST /api/ai/search` | sesión | Búsqueda por significado, con `matchScore` 0–100 |
+| `GET /api/ai/recommended` | estudiante | Vacantes que más encajan con su perfil |
+| `GET /api/jobs/{id}/match` | estudiante | Qué tanto encaja con la vacante, habilidades que coinciden y que faltan |
+| `POST /api/ai/improve-job` | empleador | Pule la descripción y sugiere etiquetas, requisitos y beneficios |
+| `POST /api/ai/cover-letter` | estudiante | Borrador de carta de presentación |
+
+Los errores siempre salen como `{ "message": "…" }`.
+
+## Por qué es rápido
+
+- **Sin ORM**: una consulta preparada por endpoint, filas a JSON tipado, pool de conexiones, mimalloc y LTO.
+- **Búsqueda de texto** en dos pasos: primero texto completo en español sin acentos (índice GIN); solo si no alcanza,
+  se completa con parecidos por trigramas (errores de dedo).
+- **Búsqueda con IA sin pgvector**: los vectores de las vacantes (256 dimensiones, normalizados) viven en un arreglo
+  plano en RAM; buscar es un producto punto contra todos. La vacante se vectoriza en segundo plano al crearla o editarla.
+- Los vectores de las consultas ya hechas se guardan en memoria: repetir una búsqueda no llama a Gemini.
+
+Medido en un MacBook (API, Postgres y el cliente de pruebas en la misma máquina), con **50 mil vacantes**:
+
+| Prueba | Resultado |
+|---|---|
+| Lista de 50 vacantes | ≈ 17 400 peticiones/s, p99 5 ms |
+| Detalle por id | ≈ 20 000 peticiones/s, p99 4 ms |
+| Búsqueda de texto | ≈ 930 peticiones/s, mediana 25 ms |
+| Búsqueda con error de dedo | ≈ 220 peticiones/s |
+| Búsqueda con IA (50 mil vectores, con Gemini simulado) | ≈ 980 peticiones/s, mediana 31 ms |
+
+Con Gemini real la búsqueda con IA suma el viaje de red de la consulta (la primera vez; después sale de memoria).
+
+## IA (opcional)
+
+Sin `GEMINI_API_KEY` todo funciona menos `/api/ai/*` (responden 503 con un mensaje claro). Variables en
+`server/.env.example`. ponytail: el índice vive en el proceso; con varias instancias, cada una carga el suyo al
+arrancar. Para escalar a varias, pasar a pgvector (HNSW).
+
+## Pruebas
+
+```bash
+cd server
+cargo test                                  # índice semántico
+# con el servidor en marcha y la base vacía:
+python3 scripts/smoke.py                    # comprobaciones de la API de punta a punta
+python3 scripts/fake_gemini.py &            # Gemini de mentira
+GEMINI_API_KEY=fake-key GEMINI_BASE=http://127.0.0.1:4999 cargo run --release   # y en otra terminal:
+python3 scripts/smoke_ai.py                 # IA: búsqueda, recomendaciones, match, asistentes
+```
