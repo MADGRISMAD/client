@@ -27,6 +27,15 @@ npm install && npm run dev    # http://localhost:5173
 El frontend lee la API de `VITE_API_URL` (por defecto `http://localhost:4000`).
 > En macOS el puerto 5000 lo usa AirPlay, por eso la API usa el 4000.
 
+## Diseño
+
+Una sola paleta (neutros fríos + esmeralda como único acento), tipografía Geist (propia, sin Google Fonts), iconos
+Phosphor y una sola escala de radios (12 px; solo las etiquetas son píldora). Claro y oscuro según el sistema.
+Las escalas `gray` y `emerald` de Tailwind se redefinen en `src/assets/tailwind.css`, así que todas las pantallas
+cambian juntas y el modo oscuro no necesita `dark:` en cada elemento. El movimiento respeta
+`prefers-reduced-motion` (entrada de la portada, `v-reveal` al entrar en pantalla, retroalimentación al presionar).
+Las fotos de `public/img` son de relleno (Picsum): reemplázalas por fotografía real de estudiantes y trabajo.
+
 ## API
 
 | Ruta | Quién | Qué hace |

@@ -6,7 +6,7 @@
           to="/my-jobs"
           class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors mb-6"
         >
-          <span>⬅️</span>
+          <span><PhArrowLeft class="ic" /></span>
           Volver a mis vacantes
         </router-link>
   
@@ -26,15 +26,15 @@
   
             <div class="flex flex-wrap gap-4 mt-4">
               <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-600">
-                <span class="material-icons text-base">schedule</span>
+                <PhClock class="ic text-base" />
                 {{ job?.duration || 'No especificada' }}
               </div>
               <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-600">
-                <span class="material-icons text-base">event</span>
+                <PhCalendarBlank class="ic text-base" />
                 Publicada el {{ formatDate(job?.createdAt) }}
               </div>
               <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-600">
-                <span class="material-icons text-base">group</span>
+                <PhUsers class="ic text-base" />
                 {{ applicants.length }} aplicantes
               </div>
             </div>
@@ -110,7 +110,7 @@
                           : status.inactiveClass
                       ]"
                     >
-                      <span class="material-icons text-sm">{{ status.icon }}</span>
+                      <component :is="status.icon" class="ic" />
                       <span>{{ status.label }}</span>
                     </button>
                   </div>
@@ -130,11 +130,11 @@
   
             <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700 mb-6">
               <div class="flex items-center gap-2">
-                <span class="material-icons text-gray-400 text-base">email</span>
+                <PhEnvelopeSimple class="ic text-gray-400 text-base" />
                 <span>{{ selected.user.email }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="material-icons text-gray-400 text-base">school</span>
+                <PhGraduationCap class="ic text-gray-400 text-base" />
                 <span>{{ selected.user.university }}</span>
               </div>
             </div>
@@ -155,7 +155,7 @@
                     target="_blank" 
                     class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
                   >
-                    <span class="material-icons text-base">description</span>
+                    <PhFileText class="ic text-base" />
                     <span>CV - Descargar</span>
                   </a>
                 </li>
@@ -165,7 +165,7 @@
                     target="_blank" 
                     class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
                   >
-                    <span class="material-icons text-base">language</span>
+                    <PhGlobe class="ic text-base" />
                     <span>Portafolio</span>
                   </a>
                 </li>
@@ -175,7 +175,7 @@
                     target="_blank" 
                     class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
                   >
-                    <span class="material-icons text-base">code</span>
+                    <PhCode class="ic text-base" />
                     <span>GitHub</span>
                   </a>
                 </li>
@@ -189,6 +189,7 @@
   
   
   <script setup>
+import { PhArrowLeft, PhCalendarBlank, PhCheckCircle, PhClock, PhCode, PhEnvelopeSimple, PhEye, PhFileText, PhGlobe, PhGraduationCap, PhPaperPlaneTilt, PhUsers, PhXCircle } from '@phosphor-icons/vue'
 import { API_URL } from '../config'
   import { ref, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
@@ -204,35 +205,35 @@ import { API_URL } from '../config'
     {
       value: 'applied',
       label: 'Aplicado',
-      icon: '📨',
+      icon: PhPaperPlaneTilt,
       activeClass: 'bg-blue-100 text-blue-800',
       inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
     },
     {
       value: 'viewed',
       label: 'Revisado',
-      icon: '👁️',
+      icon: PhEye,
       activeClass: 'bg-purple-100 text-purple-800',
       inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
     },
     {
       value: 'interview',
       label: 'Entrevista',
-      icon: '📅',
+      icon: PhCalendarBlank,
       activeClass: 'bg-amber-100 text-amber-800',
       inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
     },
     {
       value: 'hired',
       label: 'Contratado',
-      icon: '✅',
+      icon: PhCheckCircle,
       activeClass: 'bg-emerald-100 text-emerald-800',
       inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
     },
     {
       value: 'rejected',
       label: 'Rechazado',
-      icon: '❌',
+      icon: PhXCircle,
       activeClass: 'bg-red-100 text-red-800',
       inactiveClass: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
     }

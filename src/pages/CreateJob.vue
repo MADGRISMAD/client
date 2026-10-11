@@ -6,7 +6,7 @@
             to="/my-jobs"
             class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
           >
-            <span>⬅️</span>
+            <span><PhArrowLeft class="ic" /></span>
             Volver
           </router-link>
           <h1 class="text-xl font-bold text-gray-900">Publicar una nueva vacante</h1>
@@ -148,6 +148,7 @@
   </template>
   
   <script setup>
+import { PhArrowLeft } from '@phosphor-icons/vue'
 import { API_URL } from '../config'
   import { ref, reactive, watch } from 'vue'
   import { useRouter } from 'vue-router'

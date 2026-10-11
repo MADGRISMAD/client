@@ -10,7 +10,7 @@
             @click="showFilters = !showFilters"
             class="text-sm text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
           >
-            <span>⚙️</span>
+            <span><PhSlidersHorizontal class="ic" /></span>
             Filtros
           </button>
         </div>
@@ -23,7 +23,7 @@
             <input
               v-model="search"
               type="text"
-              placeholder="🔍 Busca por título, o describe lo que quieres: «algo de diseño remoto para empezar»"
+              placeholder="Busca por título o describe lo que quieres"
               class="w-full border border-gray-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
             />
             <button
@@ -31,7 +31,7 @@
               :disabled="aiLoading || search.trim().length < 2"
               class="shrink-0 bg-emerald-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition"
             >
-              {{ aiLoading ? 'Buscando…' : '✨ Buscar con IA' }}
+              <PhSparkle class="ic" weight="fill" /> {{ aiLoading ? 'Buscando…' : 'Buscar con IA' }}
             </button>
           </form>
           <p v-if="aiResults" class="mt-2 text-xs text-gray-500">
@@ -47,21 +47,21 @@
               @click="filters.remote = !filters.remote"
               :class="['px-3 py-1.5 rounded-lg border text-sm transition min-w-[100px] flex items-center justify-center', filters.remote ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'hover:bg-gray-50 border-gray-200 text-gray-600']"
             >
-              <span class="mr-1">📍</span>
+              <span class="mr-1"><PhMapPin class="ic" /></span>
               Remoto
             </button>
             <button
               @click="filters.freelance = !filters.freelance"
               :class="['px-3 py-1.5 rounded-lg border text-sm transition min-w-[100px] flex items-center justify-center', filters.freelance ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'hover:bg-gray-50 border-gray-200 text-gray-600']"
             >
-              <span class="mr-1">💻</span>
+              <span class="mr-1"><PhLaptop class="ic" /></span>
               Freelance
             </button>
             <button
               @click="filters.project = !filters.project"
               :class="['px-3 py-1.5 rounded-lg border text-sm transition min-w-[100px] flex items-center justify-center', filters.project ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'hover:bg-gray-50 border-gray-200 text-gray-600']"
             >
-              <span class="mr-1">📦</span>
+              <span class="mr-1"><PhPackage class="ic" /></span>
               Proyecto
             </button>
           </div>
@@ -69,7 +69,7 @@
       </div>
 
       <div v-if="filteredJobs.length === 0" class="text-center py-12">
-        <div class="text-gray-400 mb-2">🔍</div>
+        <div class="text-gray-400 mb-2"><PhMagnifyingGlass class="ic" /></div>
         <p class="text-gray-500">No se encontraron ofertas que coincidan con tu búsqueda.</p>
         <button
           @click="resetFilters"
@@ -92,7 +92,7 @@
               </div>
               <div>
                 <div v-if="job.highlighted" class="text-xs font-medium text-emerald-700 bg-emerald-100 rounded-lg px-2 py-0.5 mb-1 inline-block">
-                  🌟 Destacado
+                  <PhStar class="ic" /> Destacado
                 </div>
                 <h3 class="text-base font-semibold text-gray-900">{{ job.title }}</h3>
                 <p class="text-sm text-gray-500">{{ job.company || job.createdBy?.fullName }}</p>
@@ -120,11 +120,11 @@
 
           <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
             <span class="flex items-center gap-1">
-              💰 {{ job.salaryRange?.min }} - {{ job.salaryRange?.max }}/{{ job.salaryRange?.type }}
+              <PhCoins class="ic" /> {{ job.salaryRange?.min }} - {{ job.salaryRange?.max }}/{{ job.salaryRange?.type }}
             </span>
             <span class="text-gray-300">·</span>
             <span class="flex items-center gap-1">
-              ⏳ {{ job.duration || 'Sin duración' }}
+              <PhHourglassMedium class="ic" /> {{ job.duration || 'Sin duración' }}
             </span>
           </div>
 
@@ -143,6 +143,7 @@
 </template>
 
 <script setup>
+import { PhCoins, PhHourglassMedium, PhLaptop, PhMagnifyingGlass, PhMapPin, PhPackage, PhSlidersHorizontal, PhSparkle, PhStar } from '@phosphor-icons/vue'
 import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
@@ -169,6 +170,8 @@ onMounted(async () => {
   } catch (err) {
     console.error('Error al cargar ofertas:', err)
   }
+  // la búsqueda de la portada llega con ?q=...&ai=1: con sesión se hace con IA; sin sesión queda el filtro normal
+  if (route.query.ai && search.value.trim().length >= 2 && AuthService.isLoggedIn()) searchWithAi()
 })
 
 const searchWithAi = async () => {

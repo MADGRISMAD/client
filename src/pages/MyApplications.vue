@@ -1,6 +1,6 @@
 <template>
   <DefaultLayout>
-    <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 py-12">
+    <div class="min-h-[100dvh] bg-gradient-to-b from-white to-gray-50 py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <!-- Encabezado -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -14,7 +14,7 @@
             @click="showCalendar = !showCalendar"
             class="flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
           >
-            <span class="text-lg">📅</span>
+            <span class="text-lg"><PhCalendarBlank class="ic" /></span>
             {{ showCalendar ? 'Ocultar calendario' : 'Ver calendario' }}
           </button>
         </div>
@@ -35,7 +35,7 @@
             <div v-for="day in 31" :key="day" class="aspect-square p-2 border border-gray-100 rounded-lg">
               <div class="text-sm text-gray-600 mb-1">{{ day }}</div>
               <div v-if="hasApplicationOnDay(day)" class="flex justify-center">
-                <span class="text-lg">📝</span>
+                <span class="text-lg"><PhNotePencil class="ic" /></span>
               </div>
             </div>
           </div>
@@ -43,14 +43,14 @@
 
         <!-- Sin postulaciones -->
         <div v-if="applications.length === 0" class="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 text-center">
-          <div class="text-4xl mb-4">📝</div>
+          <div class="text-4xl mb-4"><PhNotePencil class="ic" /></div>
           <h2 class="text-xl font-semibold text-gray-900 mb-2">Aún no has aplicado a ninguna oferta</h2>
           <p class="text-gray-600 mb-6">Explora las ofertas disponibles y comienza tu aventura profesional</p>
           <router-link 
             to="/jobs" 
             class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
           >
-            <span class="text-lg">🔍</span>
+            <span class="text-lg"><PhMagnifyingGlass class="ic" /></span>
             Explorar ofertas
           </router-link>
         </div>
@@ -76,22 +76,22 @@
                 <p class="text-gray-600 mb-4 line-clamp-2">{{ job.description }}</p>
                 <div class="flex flex-wrap gap-3">
                   <div class="flex items-center gap-2 text-sm text-gray-600">
-                    <span class="text-lg">💰</span>
+                    <span class="text-lg"><PhCoins class="ic" /></span>
                     <span>{{ job.salaryRange.min }} - {{ job.salaryRange.max }} {{ job.salaryRange.currency }} / {{ job.salaryRange.type }}</span>
                   </div>
                   <div v-if="job.isRemote" class="flex items-center gap-2 text-sm text-emerald-600">
-                    <span class="text-lg">📍</span>
+                    <span class="text-lg"><PhMapPin class="ic" /></span>
                     <span>Remoto</span>
                   </div>
                   <div class="flex items-center gap-2 text-sm text-gray-600">
-                    <span class="text-lg">📅</span>
+                    <span class="text-lg"><PhCalendarBlank class="ic" /></span>
                     <span>Postulado el {{ formatDate(job.appliedAt) }}</span>
                   </div>
                 </div>
               </div>
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-2">
-                  <span class="text-lg">📊</span>
+                  <span class="text-lg"><PhChartBar class="ic" /></span>
                   <span class="text-sm font-medium" :class="{
                     'text-emerald-600': job.status === 'pending',
                     'text-blue-600': job.status === 'reviewed',
@@ -104,7 +104,7 @@
                   :to="`/jobs/${job._id}`"
                   class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                 >
-                  <span class="text-lg">👁️</span>
+                  <span class="text-lg"><PhEye class="ic" /></span>
                   Ver detalles
                 </router-link>
               </div>
@@ -117,6 +117,7 @@
 </template>
 
 <script setup>
+import { PhCalendarBlank, PhChartBar, PhCoins, PhEye, PhMagnifyingGlass, PhMapPin, PhNotePencil } from '@phosphor-icons/vue'
 import { API_URL } from '../config'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'

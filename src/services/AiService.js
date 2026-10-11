@@ -4,7 +4,7 @@ import { API_URL } from '../config'
 const auth = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
 
 export default {
-  /** Busca por significado: «algo de diseño remoto para empezar». Devuelve vacantes con `matchScore` (0–100). */
+  /** Busca por significado: «algo de diseño remoto para empezar». Devuelve vacantes con `matchScore` (0-100). */
   async search(query, { remote, limit } = {}) {
     const res = await axios.post(`${API_URL}/api/ai/search`, { query, remote, limit }, auth())
     return res.data.results

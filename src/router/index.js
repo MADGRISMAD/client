@@ -35,7 +35,7 @@ const routes = [
     meta: { requiresAuth: true, onlyEmployer: true }
   },
 
-  // 👇 Nueva vista para administrar aplicantes
+  // Nueva vista para administrar aplicantes
   {
     path: '/jobs/:id/applicants',
     name: 'JobApplicants',
@@ -80,7 +80,7 @@ const router = createRouter({
   }
 })
 
-// 🔐 Protección de rutas
+// Protección de rutas
 router.beforeEach((to, from, next) => {
   const isLoggedIn = AuthService.isLoggedIn()
   const user = AuthService.getUser()

@@ -1,6 +1,6 @@
 <template>
   <DefaultLayout>
-    <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 pb-12">
+    <div class="min-h-[100dvh] bg-gradient-to-b from-white to-gray-50 pb-12">
       <!-- Perfil encabezado -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="relative mb-8">
@@ -20,41 +20,41 @@
                   <div class="flex items-center gap-3 mb-2">
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ user.fullName }}</h1>
                     <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
-                      🎓 Estudiante
+                      <PhGraduationCap class="ic" /> Estudiante
                     </span>
                   </div>
                   <p class="text-gray-600">Ingeniería Informática</p>
                 </div>
                 <div class="flex gap-3">
                   <button class="flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
-                    <span class="text-lg">📄</span>
+                    <span class="text-lg"><PhFileText class="ic" /></span>
                     CV
                   </button>
                   <button class="flex items-center gap-2 border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
-                    <span class="text-lg">🔗</span>
+                    <span class="text-lg"><PhLink class="ic" /></span>
                     Compartir
                   </button>
                   <button class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <span class="text-lg">✏️</span>
+                    <span class="text-lg"><PhPencilSimple class="ic" /></span>
                     Editar perfil
                   </button>
                 </div>
               </div>
               <div class="flex flex-wrap gap-4 mt-6">
                 <div class="flex items-center gap-2 text-gray-600">
-                  <span class="text-lg">🎓</span>
+                  <span class="text-lg"><PhGraduationCap class="ic" /></span>
                   <span class="text-sm">{{ user.university || 'Universidad no especificada' }}</span>
                 </div>
                 <div class="flex items-center gap-2 text-gray-600">
-                  <span class="text-lg">📍</span>
+                  <span class="text-lg"><PhMapPin class="ic" /></span>
                   <span class="text-sm">Buenos Aires, Argentina</span>
                 </div>
                 <div class="flex items-center gap-2 text-gray-600">
-                  <span class="text-lg">📧</span>
+                  <span class="text-lg"><PhEnvelopeSimple class="ic" /></span>
                   <span class="text-sm">{{ user.email }}</span>
                 </div>
                 <div class="flex items-center gap-2 text-gray-600">
-                  <span class="text-lg">📅</span>
+                  <span class="text-lg"><PhCalendarBlank class="ic" /></span>
                   <span class="text-sm">Disponible desde Junio 2023</span>
                 </div>
               </div>
@@ -72,7 +72,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 space-y-8">
           <div class="flex items-center gap-3 mb-6">
-            <span class="text-2xl">⚙️</span>
+            <span class="text-2xl"><PhSlidersHorizontal class="ic" /></span>
             <h2 class="text-xl font-bold text-gray-900">Configuración del perfil</h2>
           </div>
           <form @submit.prevent="handleSave" class="space-y-6">
@@ -163,6 +163,7 @@
 </template>
 
 <script setup>
+import { PhCalendarBlank, PhEnvelopeSimple, PhFileText, PhGraduationCap, PhLink, PhMapPin, PhPencilSimple, PhSlidersHorizontal } from '@phosphor-icons/vue'
 import { ref, reactive, watch } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import DefaultLayout from '../layouts/DefaultLayout.vue'

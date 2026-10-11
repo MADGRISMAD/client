@@ -1,1 +1,223 @@
 @import "tailwindcss";
+
+/*
+ * Sistema de diseño de IAplica.
+ *
+ * Una sola paleta: neutros fríos + UN acento (esmeralda). Una sola escala de radios (12 px en todo lo interactivo y
+ * en las tarjetas; solo las etiquetas son píldora). Claro y oscuro por defecto según el sistema (prefers-color-scheme).
+ * Las pantallas usan las clases normales de Tailwind (gray, emerald, white): aquí se redefinen esas escalas, así
+ * todo el sitio cambia junto y el modo oscuro invierte las escalas en vez de repetir `dark:` en cada elemento.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* neutros (claro) */
+  --white: #fcfcfd;
+  --black: #0d0f14;
+  --g50: #f5f6f8;
+  --g100: #eceef1;
+  --g200: #dde0e5;
+  --g300: #c5cad2;
+  --g400: #959ca8;
+  --g500: #6a7280;
+  --g600: #505865;
+  --g700: #3b424d;
+  --g800: #262b34;
+  --g900: #161a21;
+  --g950: #0d0f14;
+
+  /* acento: esmeralda. 600 y 700 oscurecidos para cumplir contraste AA con texto claro */
+  --e50: #ecfdf5;
+  --e100: #d3f8e6;
+  --e200: #a8efcf;
+  --e300: #6fe0b2;
+  --e400: #34c98f;
+  --e500: #0f9f6e;
+  --e600: #047857;
+  --e700: #065f46;
+  --e800: #064e3b;
+  --e900: #043a2c;
+  --e950: #022c22;
+
+  --shadow-tint: 6 40 30;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --white: #0b0d12;
+    --black: #f6f7f9;
+    --g50: #11141a;
+    --g100: #171b22;
+    --g200: #232831;
+    --g300: #343b47;
+    --g400: #5d6776;
+    --g500: #8b94a2;
+    --g600: #a8afba;
+    --g700: #c4c9d1;
+    --g800: #dde0e5;
+    --g900: #eceef1;
+    --g950: #f6f7f9;
+
+    --e50: #06241c;
+    --e100: #08352a;
+    --e200: #0b4e3d;
+    --e300: #0f7357;
+    --e400: #16a176;
+    --e500: #2cc08f;
+    --e600: #3bd69f;
+    --e700: #6ee7b7;
+    --e800: #a7f3d0;
+    --e900: #d1fae5;
+    --e950: #ecfdf5;
+
+    --shadow-tint: 0 0 0;
+  }
+}
+
+@theme {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --color-white: var(--white);
+  --color-black: var(--black);
+  --color-gray-50: var(--g50);
+  --color-gray-100: var(--g100);
+  --color-gray-200: var(--g200);
+  --color-gray-300: var(--g300);
+  --color-gray-400: var(--g400);
+  --color-gray-500: var(--g500);
+  --color-gray-600: var(--g600);
+  --color-gray-700: var(--g700);
+  --color-gray-800: var(--g800);
+  --color-gray-900: var(--g900);
+  --color-gray-950: var(--g950);
+  --color-emerald-50: var(--e50);
+  --color-emerald-100: var(--e100);
+  --color-emerald-200: var(--e200);
+  --color-emerald-300: var(--e300);
+  --color-emerald-400: var(--e400);
+  --color-emerald-500: var(--e500);
+  --color-emerald-600: var(--e600);
+  --color-emerald-700: var(--e700);
+  --color-emerald-800: var(--e800);
+  --color-emerald-900: var(--e900);
+  --color-emerald-950: var(--e950);
+
+  /* una sola escala de radios: todo lo "redondeado" mide lo mismo; las píldoras usan rounded-full */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 0.75rem;
+
+  /* sombras teñidas del tono de la marca (nunca negro puro sobre claro) */
+  --shadow-xs: 0 1px 1px rgb(var(--shadow-tint) / 0.05);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-tint) / 0.07), 0 1px 1px rgb(var(--shadow-tint) / 0.04);
+  --shadow-md: 0 6px 16px -4px rgb(var(--shadow-tint) / 0.1), 0 2px 4px rgb(var(--shadow-tint) / 0.05);
+  --shadow-lg: 0 18px 36px -12px rgb(var(--shadow-tint) / 0.16), 0 4px 8px rgb(var(--shadow-tint) / 0.05);
+  --shadow-xl: 0 28px 60px -20px rgb(var(--shadow-tint) / 0.22);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--white);
+    color: var(--g900);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+  body {
+    letter-spacing: -0.006em;
+  }
+  ::selection {
+    background: var(--e600);
+    color: var(--white);
+  }
+  :focus-visible {
+    outline: 2px solid var(--e500);
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Icono Phosphor al tamaño del texto que lo rodea (un solo trazo y familia en todo el sitio) */
+.ic {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  flex: none;
+}
+
+/* Botones: feedback táctil al presionar */
+.press {
+  transition: transform 0.2s var(--ease-out-expo), background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.press:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* ---------- movimiento (solo si la persona no pidió reducirlo) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* entrada de la portada: cada pieza sube y aparece en cascada (jerarquía: primero el mensaje, luego la acción) */
+  .rise {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: rise 0.8s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  @keyframes rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* aparición al entrar en pantalla (la activa la directiva v-reveal) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  /* la foto de la portada se asienta al cargar: confirma que la página ya está lista */
+  .settle {
+    animation: settle 1.4s var(--ease-out-expo) both;
+  }
+  @keyframes settle {
+    from {
+      transform: scale(1.06);
+      opacity: 0.6;
+    }
+  }
+  /* barra de carga con forma de la lista final */
+  .shimmer {
+    background: linear-gradient(100deg, var(--g100) 30%, var(--g200) 50%, var(--g100) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .shimmer {
+    background: var(--g100);
+  }
+}

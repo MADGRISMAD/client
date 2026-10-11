@@ -10,12 +10,13 @@
         :to="`/jobs/${job._id}`"
         class="mt-3 inline-block text-sm text-green-700 hover:underline"
       >
-        Ver detalles →
+        Ver detalles <PhArrowRight class="ic" />
       </router-link>
     </div>
   </template>
   
   <script setup>
+import { PhArrowRight } from '@phosphor-icons/vue'
   defineProps({ job: Object })
   </script>
   

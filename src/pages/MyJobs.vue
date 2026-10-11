@@ -17,7 +17,7 @@
 
       <div v-if="jobs.length === 0" class="bg-white border border-gray-200 rounded-lg p-8 text-center">
         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-          <span class="text-2xl">📝</span>
+          <span class="text-2xl"><PhNotePencil class="ic" /></span>
         </div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No hay vacantes publicadas</h3>
         <p class="text-gray-500 mb-4">Comienza publicando tu primera vacante para encontrar candidatos</p>
@@ -43,15 +43,15 @@
               
               <div class="flex flex-wrap gap-2 mb-4">
                 <div class="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
-                  <span>💰</span>
+                  <span><PhCoins class="ic" /></span>
                   <span>{{ job.salaryRange.min }} - {{ job.salaryRange.max }} {{ job.salaryRange.currency }} / {{ job.salaryRange.type }}</span>
                 </div>
                 <div v-if="job.isRemote" class="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
-                  <span>🌍</span>
+                  <span><PhGlobe class="ic" /></span>
                   <span>Remoto</span>
                 </div>
                 <div v-if="job.highlighted" class="flex items-center gap-1 px-2 py-1 bg-emerald-100 rounded-full text-xs text-emerald-700">
-                  <span>⭐</span>
+                  <span><PhStar class="ic" /></span>
                   <span>Destacado</span>
                 </div>
               </div>
@@ -64,21 +64,21 @@
                 :to="`/jobs/${job._id}/applicants`"
                 class="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm text-emerald-600 hover:bg-emerald-50 transition-colors"
               >
-                <span>👥</span>
+                <span><PhUsers class="ic" /></span>
                 <span>Ver aplicantes</span>
               </RouterLink>
               <button 
                 @click="openEditModal(job)" 
                 class="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
               >
-                <span>✏️</span>
+                <span><PhPencilSimple class="ic" /></span>
                 <span>Editar</span>
               </button>
               <button 
                 @click="deleteJob(job._id)" 
                 class="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm text-red-600 hover:bg-red-50 transition-colors"
               >
-                <span>🗑️</span>
+                <span><PhTrash class="ic" /></span>
                 <span>Eliminar</span>
               </button>
             </div>
@@ -170,6 +170,7 @@
 </template>
 
 <script setup>
+import { PhCoins, PhGlobe, PhNotePencil, PhPencilSimple, PhStar, PhTrash, PhUsers } from '@phosphor-icons/vue'
 import { API_URL } from '../config'
 import { ref, onMounted, reactive, watch } from 'vue'
 import axios from 'axios'
