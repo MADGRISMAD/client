@@ -1,4 +1,4 @@
-# Client — bolsa de trabajo para estudiantes
+# Talentia — bolsa de trabajo para estudiantes
 
 Frontend en **Vue 3 + Vite + Tailwind** y backend en **Rust (Axum + Tokio) + PostgreSQL**, con IA (Gemini) para
 buscar y recomendar empleos por significado.

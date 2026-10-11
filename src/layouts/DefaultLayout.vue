@@ -8,7 +8,7 @@
           <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
             <span class="text-xl text-emerald-600">🎓</span>
           </div>
-          <span class="text-xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">internships.gg</span>
+          <span class="text-xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">Talentia</span>
         </router-link>
 
         <!-- Mobile menu button -->
@@ -327,7 +327,7 @@
               <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
                 <span class="text-xl text-emerald-600">🎓</span>
               </div>
-              <span class="text-lg font-bold text-white">internships.gg</span>
+              <span class="text-lg font-bold text-white">Talentia</span>
             </div>
             <div class="flex items-center gap-4">
               <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">
@@ -341,7 +341,7 @@
               </a>
             </div>
             <p class="text-sm text-gray-400">
-              © 2024 internships.gg. Todos los derechos reservados.
+              © 2026 Talentia. Todos los derechos reservados.
             </p>
           </div>
         </div>
